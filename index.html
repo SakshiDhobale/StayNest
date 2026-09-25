@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>StayNest - Find Your Perfect PG</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="container nav-container">
+
+            <a href="#home" class="logo">
+                <i class="fa-solid fa-house"></i>
+                <span>StayNest</span>
+            </a>
+
+            <nav class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#properties">Properties</a>
+                <a href="#why-staynest">Why StayNest</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+            </nav>
+
+            <div class="nav-actions">
+                <button id="loginBtn" type="button">Login</button>
+                <button id="signupBtn" type="button">Sign Up</button>
+            </div>
+
+        </div>
+    </header>
+
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+        <div class="container hero-container">
+
+            <div class="hero-content">
+
+                <span class="hero-tag">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Student Friendly PGs
+                </span>
+
+                <h1>
+                    Find a Place You
+                    <span>Can Call Home.</span>
+                </h1>
+
+                <p>
+                    Discover comfortable and verified PG accommodations
+                    near your college with facilities that make student life easier.
+                </p>
+
+                <div class="hero-buttons">
+                    <a href="#properties" class="primary-btn">
+                        Explore PGs
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+
+                    <a href="#about" class="secondary-btn">
+                        Learn More
+                    </a>
+                </div>
+
+                <div class="hero-stats">
+
+                    <div class="stat">
+                        <strong>3+</strong>
+                        <span>PG Options</span>
+                    </div>
+
+                    <div class="stat">
+                        <strong>3+</strong>
+                        <span>Locations</span>
+                    </div>
+
+                    <div class="stat">
+                        <strong>4.8★</strong>
+                        <span>Average Rating</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="hero-image">
+
+                <img src="images/hero-room.jpg" alt="Comfortable PG Room">
+
+                <div class="floating-card verified-card">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <div>
+                        <strong>Student Friendly PGs</strong>
+                        <span>Comfortable Stay</span>
+                    </div>
+                </div>
+
+                <div class="floating-card rating-card">
+                    <i class="fa-solid fa-star"></i>
+                    <div>
+                        <strong>4.8 / 5</strong>
+                        <span>Student Rating</span>
+                    </div>
+                </div>
+
+                <div class="floating-card wifi-card">
+                    <i class="fa-solid fa-wifi"></i>
+                    <span>Wi-Fi Available</span>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- Search -->
+    <section class="search-section">
+
+        <div class="container">
+
+            <div class="search-box">
+
+                <div class="input-box">
+                    <i class="fa-solid fa-location-dot"></i>
+
+                    <input
+                        type="text"
+                        id="locationInput"
+                        placeholder="Enter location"
+                    >
+                </div>
+
+                <div class="input-box">
+                    <i class="fa-solid fa-indian-rupee-sign"></i>
+
+                    <input
+                        type="number"
+                        id="budgetInput"
+                        placeholder="Max budget"
+                    >
+                </div>
+
+                <div class="input-box">
+                    <i class="fa-solid fa-building"></i>
+
+                    <input
+                        type="text"
+                        id="pgTypeInput"
+                        placeholder="PG Type / Facility"
+                    >
+                </div>
+
+                <button
+                    type="button"
+                    id="searchBtn"
+                >
+                    Search
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+
+            </div>
+
+            <p
+                id="searchMessage"
+                class="search-message"
+            ></p>
+
+        </div>
+
+    </section>
+
+
+    <!-- Properties -->
+    <section
+        class="properties-section"
+        id="properties"
+    >
+
+        <div class="container">
+
+            <div class="section-heading">
+                <span>Our Properties</span>
+
+                <h2>Explore Popular PGs</h2>
+
+                <p>
+                    Find comfortable and convenient PGs suitable for student living.
+                </p>
+            </div>
+
+
+            <div class="property-grid">
+
+                <!-- Property 1 -->
+                <div
+                    class="property-card"
+                    data-name="StayWell Residency"
+                    data-location="Lokmanya Nagar, Nagpur"
+                    data-price="5500"
+                >
+
+                    <div class="property-image">
+
+                        <img
+                            src="images/pg1.jpg"
+                            alt="StayWell Residency PG"
+                        >
+
+                        <button
+                            class="favorite-btn"
+                            type="button"
+                            onclick="toggleFavorite('StayWell Residency', this)"
+                        >
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+
+                    </div>
+
+
+                    <div class="property-info">
+
+                        <div class="property-title-row">
+
+                            <h3>StayWell Residency</h3>
+
+                            <span class="rating">
+                                <i class="fa-solid fa-star"></i>
+                                4.8
+                            </span>
+
+                        </div>
+
+
+                        <p class="location">
+                            <i class="fa-solid fa-location-dot"></i>
+                            Lokmanya Nagar, Nagpur
+                        </p>
+
+
+                        <p class="property-description">
+                            A comfortable and student-friendly PG with essential
+                            facilities for a convenient stay.
+                        </p>
+
+
+                        <div class="property-features">
+
+                            <span>
+                                <i class="fa-solid fa-wifi"></i>
+                                Wi-Fi
+                            </span>
+
+                            <span>
+                                <i class="fa-solid fa-utensils"></i>
+                                Meals
+                            </span>
+
+                            <span>
+                                <i class="fa-solid fa-bed"></i>
+                                Furnished
+                            </span>
+
+                        </div>
+
+
+                        <div class="price-row">
+
+                            <div class="price">
+                                <strong>₹5,500</strong>
+                                <span>/ month</span>
+                            </div>
+
+                            <button
+                                class="view-btn"
+                                type="button"
+                                onclick="openProperty('StayWell Residency')"
+                            >
+                                View Details
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Property 2 -->
+                <div
+                    class="property-card"
+                    data-name="Sai Krupa PG"
+                    data-location="Vasudev Nagar, Nagpur"
+                    data-price="6000"
+                >
+
+                    <div class="property-image">
+
+                        <img
+                            src="images/pg2.png"
+                            alt="Sai Krupa PG"
+                        >
+
+                        <button
+                            class="favorite-btn"
+                            type="button"
+                            onclick="toggleFavorite('Sai Krupa PG', this)"
+                        >
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+
+                    </div>
+
+
+                    <div class="property-info">
+
+                        <div class="property-title-row">
+
+                            <h3>Sai Krupa PG</h3>
+
+                            <span class="rating">
+                                <i class="fa-solid fa-star"></i>
+                                4.7
+                            </span>
+
+                        </div>
+
+
+                        <p class="location">
+                            <i class="fa-solid fa-location-dot"></i>
+                            Vasudev Nagar, Nagpur
+                        </p>
+
+
+                        <p class="property-description">
+                            A convenient PG option for students with useful
+                            facilities and a comfortable living environment.
+                        </p>
+
+
+                        <div class="property-features">
+
+                            <span>
+                                <i class="fa-solid fa-shield-halved"></i>
+                                Security
+                            </span>
+
+                            <span>
+                                <i class="fa-solid fa-shirt"></i>
+                                Laundry
+                            </span>
+
+                            <span>
+                                <i class="fa-solid fa-wifi"></i>
+                                Wi-Fi
+                            </span>
+
+                        </div>
+
+
+                        <div class="price-row">
+
+                            <div class="price">
+                                <strong>₹6,000</strong>
+                                <span>/ month</span>
+                            </div>
+
+                            <button
+                                class="view-btn"
+                                type="button"
+                                onclick="openProperty('Sai Krupa PG')"
+                            >
+                                View Details
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Property 3 -->
+                <div
+                    class="property-card"
+                    data-name="Urban Nest PG"
+                    data-location="Hingna Road, Nagpur"
+                    data-price="7000"
+                >
+
+                    <div class="property-image">
+
+                        <img
+                            src="images/pg3.jpg"
+                            alt="Urban Nest PG"
+                        >
+
+                        <button
+                            class="favorite-btn"
+                            type="button"
+                            onclick="toggleFavorite('Urban Nest PG', this)"
+                        >
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+
+                    </div>
+
+
+                    <div class="property-info">
+
+                        <div class="property-title-row">
+
+                            <h3>Urban Nest PG</h3>
+
+                            <span class="rating">
+                                <i class="fa-solid fa-star"></i>
+                                4.9
+                            </span>
+
+                        </div>
+
+
+                        <p class="location">
+                            <i class="fa-solid fa-location-dot"></i>
+                            Hingna Road, Nagpur
+                        </p>
+
+
+                        <p class="property-description">
+                            A modern and comfortable PG with useful facilities
+                            for students looking for a convenient stay.
+                        </p>
+
+
+                        <div class="property-features">
+
+                            <span>
+                                <i class="fa-solid fa-bed"></i>
+                                Furnished
+                            </span>
+
+                            <span>
+                                <i class="fa-solid fa-wifi"></i>
+                                Wi-Fi
+                            </span>
+
+                            <span>
+                                <i class="fa-solid fa-snowflake"></i>
+                                AC
+                            </span>
+
+                        </div>
+
+
+                        <div class="price-row">
+
+                            <div class="price">
+                                <strong>₹7,000</strong>
+                                <span>/ month</span>
+                            </div>
+
+                            <button
+                                class="view-btn"
+                                type="button"
+                                onclick="openProperty('Urban Nest PG')"
+                            >
+                                View Details
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Saved PGs -->
+    <section
+        class="saved-section"
+        id="savedPGs"
+    >
+
+        <div class="container">
+
+            <div class="section-heading">
+
+                <span>Your Favorites</span>
+
+                <h2>Saved PGs</h2>
+
+                <p>
+                    Your favorite PGs are saved here for easy access.
+                </p>
+
+            </div>
+
+
+            <div
+                class="saved-grid"
+                id="savedGrid"
+            ></div>
+
+
+            <p
+                class="no-saved"
+                id="noSavedMessage"
+            >
+                You haven't saved any PG yet.
+                Click the ❤️ icon on a PG to save it.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- Why StayNest -->
+    <section
+        class="why-section"
+        id="why-staynest"
+    >
+
+        <div class="container">
+
+            <div class="section-heading">
+
+                <span>Why Choose Us</span>
+
+                <h2>Why StayNest?</h2>
+
+                <p>
+                    We make finding a suitable PG simple and convenient for students.
+                </p>
+
+            </div>
+
+
+            <div class="why-grid">
+
+                <div class="why-card">
+
+                    <div class="why-icon">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+
+                    <h3>Student Friendly PGs</h3>
+
+                    <p>
+                        Explore PG options with useful information
+                        about location and facilities.
+                    </p>
+
+                </div>
+
+
+                <div class="why-card">
+
+                    <div class="why-icon">
+                        <i class="fa-solid fa-user-graduate"></i>
+                    </div>
+
+                    <h3>Student Friendly</h3>
+
+                    <p>
+                        Find accommodation options suitable for
+                        student needs and budgets.
+                    </p>
+
+                </div>
+
+
+                <div class="why-card">
+
+                    <div class="why-icon">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+
+                    <h3>Easy Search</h3>
+
+                    <p>
+                        Search PGs based on location, budget and
+                        available facilities.
+                    </p>
+
+                </div>
+
+
+                <div class="why-card">
+
+                    <div class="why-icon">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </div>
+
+                    <h3>Easy Enquiry</h3>
+
+                    <p>
+                        Send an enquiry easily to get more information
+                        about your preferred PG.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- About -->
+    <section
+        class="about-section"
+        id="about"
+    >
+
+        <div class="container about-container">
+
+            <div class="about-content">
+
+                <span class="section-label">
+                    About StayNest
+                </span>
+
+                <h2>
+                    Making PG Search
+                    Simple for Students
+                </h2>
+
+                <p>
+                    StayNest is a student-focused PG accommodation platform
+                    designed to make the process of finding a suitable place
+                    to stay easier and more convenient.
+                </p>
+
+                <p>
+                    Students can explore different PG options, compare
+                    basic facilities, save their favorite properties and
+                    send enquiries from one place.
+                </p>
+
+                <a
+                    href="#properties"
+                    class="primary-btn"
+                >
+                    Explore Properties
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CTA -->
+    <section class="cta-section">
+
+        <div class="container">
+
+            <div class="cta-box">
+
+                <div>
+
+                    <span>Find Your Next Stay</span>
+
+                    <h2>
+                        Ready to Find Your Perfect PG?
+                    </h2>
+
+                    <p>
+                        Explore comfortable and student-friendly PG options
+                        with StayNest.
+                    </p>
+
+                </div>
+
+                <a
+                    href="#properties"
+                    class="primary-btn"
+                >
+                    Explore PGs
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Footer -->
+    <footer id="contact">
+
+        <div class="container footer-container">
+
+            <div class="footer-brand">
+
+                <a href="#home" class="logo">
+                    <i class="fa-solid fa-house"></i>
+                    <span>StayNest</span>
+                </a>
+
+                <p>
+                    A simple and student-friendly platform
+                    to discover PG accommodations.
+                </p>
+
+            </div>
+
+
+            <div class="footer-links">
+
+                <h3>Quick Links</h3>
+
+                <a href="#home">Home</a>
+                <a href="#properties">Properties</a>
+                <a href="#savedPGs">Saved PGs</a>
+                <a href="#why-staynest">Why StayNest</a>
+                <a href="#about">About</a>
+
+            </div>
+
+
+            <div class="footer-contact">
+
+                <h3>Contact</h3>
+
+                <p>
+                    <i class="fa-solid fa-envelope"></i>
+                    staynest@example.com
+                </p>
+
+                <p>
+                    <i class="fa-solid fa-phone"></i>
+                    +91 98765 43210
+                </p>
+
+                <p>
+                    <i class="fa-solid fa-location-dot"></i>
+                    Nagpur, Maharashtra
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer-bottom">
+
+            <p>
+                © 2026 StayNest. All Rights Reserved.
+            </p>
+
+        </div>
+
+    </footer>
+
+
+    <!-- Property Modal -->
+    <div
+        class="property-modal"
+        id="propertyModal"
+    >
+
+        <div class="property-modal-content">
+
+            <button
+                class="close-modal"
+                id="closeModal"
+                type="button"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+
+            <div class="modal-image">
+
+                <img
+                    id="modalImage"
+                    src=""
+                    alt="PG"
+                >
+
+            </div>
+
+
+            <div class="modal-info">
+
+                <h2 id="modalTitle"></h2>
+
+                <p
+                    class="modal-location"
+                    id="modalLocation"
+                ></p>
+
+                <p id="modalDescription"></p>
+
+
+                <div class="modal-price-rating">
+
+                    <strong id="modalPrice"></strong>
+
+                    <span>
+                        <i class="fa-solid fa-star"></i>
+                        <span id="modalRating"></span>
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="modal-facilities"
+                    id="modalFacilities"
+                ></div>
+
+
+                <!-- Room Section -->
+                <div
+                    id="roomSection"
+                    style="display: none; margin-top: 18px;"
+                ></div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        class="visit-btn"
+                        id="viewRoomsBtn"
+                        type="button"
+                    >
+                        View Rooms
+                        <i class="fa-solid fa-bed"></i>
+                    </button>
+
+                    <button
+                        class="enquire-btn"
+                        id="enquireBtn"
+                        type="button"
+                    >
+                        Enquire Now
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+
+                    <button
+                        class="visit-btn"
+                        id="visitBtn"
+                        type="button"
+                    >
+                        Request a Visit
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Visit Modal -->
+    <div
+        class="visit-modal"
+        id="visitModal"
+    >
+
+        <div class="visit-content">
+
+            <button
+                class="close-visit"
+                id="closeVisit"
+                type="button"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+
+            <div class="visit-header">
+
+                <i class="fa-solid fa-calendar-check"></i>
+
+                <h2>Request a Visit</h2>
+
+                <p>
+                    Choose a suitable date and time to visit the PG.
+                </p>
+
+            </div>
+
+
+            <form id="visitForm">
+
+                <input
+                    type="text"
+                    id="visitName"
+                    placeholder="Your Name"
+                    required
+                >
+
+                <input
+                    type="tel"
+                    id="visitPhone"
+                    placeholder="Phone Number"
+                    required
+                >
+
+                <input
+                    type="date"
+                    id="visitDate"
+                    required
+                >
+
+                <select
+                    id="visitTime"
+                    required
+                >
+
+                    <option value="">
+                        Select Preferred Time
+                    </option>
+
+                    <option value="10:00 AM">
+                        10:00 AM
+                    </option>
+
+                    <option value="12:00 PM">
+                        12:00 PM
+                    </option>
+
+                    <option value="2:00 PM">
+                        2:00 PM
+                    </option>
+
+                    <option value="4:00 PM">
+                        4:00 PM
+                    </option>
+
+                    <option value="6:00 PM">
+                        6:00 PM
+                    </option>
+
+                </select>
+
+
+                <textarea
+                    id="visitMessage"
+                    placeholder="Any additional message (optional)"
+                ></textarea>
+
+
+                <button
+                    type="submit"
+                    class="visit-submit"
+                >
+                    Submit Visit Request
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- Enquiry Modal -->
+    <div
+        class="enquiry-modal"
+        id="enquiryModal"
+    >
+
+        <div class="enquiry-content">
+
+            <button
+                class="close-enquiry"
+                id="closeEnquiry"
+                type="button"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+
+            <div class="enquiry-header">
+
+                <h2>Send an Enquiry</h2>
+
+                <p>
+                    Fill in your details and we will get back to you.
+                </p>
+
+            </div>
+
+
+            <form id="enquiryForm">
+
+                <input
+                    type="text"
+                    id="enquiryName"
+                    placeholder="Your Name"
+                    required
+                >
+
+                <input
+                    type="email"
+                    id="enquiryEmail"
+                    placeholder="Email Address"
+                    required
+                >
+
+                <input
+                    type="tel"
+                    id="enquiryPhone"
+                    placeholder="Phone Number"
+                    required
+                >
+
+                <textarea
+                    id="enquiryMessage"
+                    placeholder="Your Message"
+                    required
+                ></textarea>
+
+                <button
+                    type="submit"
+                    class="enquiry-submit"
+                >
+                    Submit Enquiry
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- Login / Signup -->
+    <div
+        class="auth-modal"
+        id="loginModal"
+    >
+
+        <div class="auth-content">
+
+            <button
+                class="close-auth"
+                id="closeLogin"
+                type="button"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+
+            <!-- Login -->
+            <div id="loginSection">
+
+                <h2>Welcome Back</h2>
+
+                <p>
+                    Login to continue to StayNest.
+                </p>
+
+
+                <form id="loginForm">
+
+                    <input
+                        type="email"
+                        id="loginEmail"
+                        placeholder="Email Address"
+                        required
+                    >
+
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        placeholder="Password"
+                        required
+                    >
+
+                    <button type="submit">
+                        Login
+                    </button>
+
+                </form>
+
+
+                <p class="auth-switch">
+
+                    Don't have an account?
+
+                    <button
+                        type="button"
+                        id="showSignup"
+                    >
+                        Sign Up
+                    </button>
+
+                </p>
+
+            </div>
+
+
+            <!-- Signup -->
+            <div
+                id="signupSection"
+                style="display: none;"
+            >
+
+                <h2>Create Account</h2>
+
+                <p>
+                    Sign up to explore StayNest.
+                </p>
+
+
+                <form id="signupForm">
+
+                    <input
+                        type="text"
+                        id="signupName"
+                        placeholder="Full Name"
+                        required
+                    >
+
+                    <input
+                        type="email"
+                        id="signupEmail"
+                        placeholder="Email Address"
+                        required
+                    >
+
+                    <input
+                        type="password"
+                        id="signupPassword"
+                        placeholder="Password"
+                        required
+                    >
+
+                    <button type="submit">
+                        Create Account
+                    </button>
+
+                </form>
+
+
+                <p class="auth-switch">
+
+                    Already have an account?
+
+                    <button
+                        type="button"
+                        id="showLogin"
+                    >
+                        Login
+                    </button>
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- JavaScript -->
+    <script src="js/script.js"></script>
+
+</body>
+</html>
