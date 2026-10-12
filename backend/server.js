@@ -1,6 +1,13 @@
+
+require("dotenv").config();
+
+const bcrypt = require("bcryptjs");
 const express = require("express");
 const cors = require("cors");
 const db = require("./database");
+const { Resend } = require("resend");
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const app = express();
 
@@ -12,6 +19,36 @@ const PORT = process.env.PORT || 5000;
 // Home route
 app.get("/", (req, res) => {
     res.send("StayNest Backend is Running!");
+});
+
+// Admin Login API
+app.post("/api/admin/login", (req, res) => {
+    console.log("ADMIN LOGIN API HIT");
+
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({
+            success: false,
+            message: "Email and password are required."
+        });
+    }
+
+    const admin = db.prepare(
+        "SELECT * FROM admins WHERE email = ?"
+    ).get(email);
+
+    if (!admin || !bcrypt.compareSync(password, admin.password_hash)) {
+        return res.status(401).json({
+            success: false,
+            message: "Invalid email or password."
+        });
+    }
+
+    res.json({
+        success: true,
+        message: "Login successful!"
+    });
 });
 
 // PG data
@@ -46,67 +83,202 @@ app.get("/api/pgs", (req, res) => {
 
 // Enquiry API
 app.post("/api/enquiries", (req, res) => {
-    const { name, email, phone, message } = req.body;
+    try {
+        const { name, email, phone, message } = req.body;
 
-    const insertEnquiry = db.prepare(`
-        INSERT INTO enquiries (name, email, phone, message)
-        VALUES (?, ?, ?, ?)
-    `);
+        const insertEnquiry = db.prepare(`
+            INSERT INTO enquiries (name, email, phone, message)
+            VALUES (?, ?, ?, ?)
+        `);
 
-    insertEnquiry.run(name, email, phone, message);
+        insertEnquiry.run(name, email, phone, message);
 
-    console.log("New Enquiry Saved to Database:");
-    console.log("Name:", name);
-    console.log("Email:", email);
-    console.log("Phone:", phone);
-    console.log("Message:", message);
+        console.log("New Enquiry Saved to Database:", name);
 
-    res.json({
-        success: true,
-        message: "Enquiry submitted successfully!"
-    });
+        res.json({
+            success: true,
+            message: "Enquiry submitted successfully!"
+        });
+    } catch (error) {
+        console.error("Enquiry error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Could not save enquiry."
+        });
+    }
 });
 
 // Visit Request API
 app.post("/api/visits", (req, res) => {
-    const { name, phone, date, time, message } = req.body;
+    try {
+        const { name, phone, email, date, time, message } = req.body;
 
-    const insertVisit = db.prepare(`
-        INSERT INTO visits (name, phone, date, time, message)
-        VALUES (?, ?, ?, ?, ?)
-    `);
+        if (!name || !phone || !email) {
+            return res.status(400).json({
+                success: false,
+                message: "Name, phone and email are required."
+            });
+        }
 
-    insertVisit.run(name, phone, date, time, message);
+        const insertVisit = db.prepare(`
+            INSERT INTO visits
+                (name, phone, email, date, time, message)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `);
 
-    console.log("New Visit Request Saved to Database:");
-    console.log("Name:", name);
-    console.log("Phone:", phone);
-    console.log("Date:", date);
-    console.log("Time:", time);
-    console.log("Message:", message);
+        insertVisit.run(name, phone, email, date, time, message);
 
-    res.json({
-        success: true,
-        message: "Visit request submitted successfully!"
-    });
+        console.log("New Visit Request Saved:", name, email);
+
+        res.json({
+            success: true,
+            message: "Visit request submitted successfully!"
+        });
+    } catch (error) {
+        console.error("Visit request error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Could not save visit request."
+        });
+    }
 });
 
 // Admin - Get Enquiries
 app.get("/api/enquiries", (req, res) => {
-    const enquiries = db.prepare(
-        "SELECT * FROM enquiries ORDER BY id DESC"
-    ).all();
+    try {
+        const enquiries = db.prepare(
+            "SELECT * FROM enquiries ORDER BY id DESC"
+        ).all();
 
-    res.json(enquiries);
+        res.json(enquiries);
+    } catch (error) {
+        console.error("Get enquiries error:", error);
+        res.status(500).json({ message: "Could not load enquiries." });
+    }
 });
 
 // Admin - Get Visit Requests
 app.get("/api/visits", (req, res) => {
-    const visits = db.prepare(
-        "SELECT * FROM visits ORDER BY id DESC"
-    ).all();
+    try {
+        const visits = db.prepare(
+            "SELECT * FROM visits ORDER BY id DESC"
+        ).all();
 
-    res.json(visits);
+        res.json(visits);
+    } catch (error) {
+        console.error("Get visits error:", error);
+        res.status(500).json({ message: "Could not load visit requests." });
+    }
+});
+
+// Admin - Update Visit Request Status and Send Email
+app.patch("/api/visits/:id/status", async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const allowedStatuses = ["Approved", "Rejected"];
+
+    if (!allowedStatuses.includes(status)) {
+        return res.status(400).json({
+            success: false,
+            message: "Status must be Approved or Rejected."
+        });
+    }
+
+    try {
+        // Find visit request
+        const visit = db.prepare(
+            "SELECT * FROM visits WHERE id = ?"
+        ).get(id);
+
+        if (!visit) {
+            return res.status(404).json({
+                success: false,
+                message: "Visit request not found."
+            });
+        }
+
+        // Save status before attempting email
+        db.prepare(
+            "UPDATE visits SET status = ? WHERE id = ?"
+        ).run(status, id);
+
+        // Older requests may not have an email address
+        if (!visit.email) {
+            return res.json({
+                success: true,
+                id: Number(id),
+                status,
+                emailSent: false,
+                message: `Status updated to ${status}, but no email address is saved for this request.`
+            });
+        }
+
+        // Send status notification using Resend
+        try {
+            const emailResult = await resend.emails.send({
+                from: "StayNest <onboarding@resend.dev>",
+                to: [visit.email],
+                subject: `StayNest Visit Request ${status}`,
+                html: `
+                    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                        <h2>Hello ${String(visit.name || "there")
+                            .replace(/[&<>"']/g, "")},</h2>
+                        <p>Your StayNest PG visit request has been
+                            <strong>${status}</strong>.</p>
+                        <p><strong>Visit date:</strong>
+                            ${String(visit.date || "Not specified")
+                                .replace(/[&<>"']/g, "")}</p>
+                        <p><strong>Visit time:</strong>
+                            ${String(visit.time || "Not specified")
+                                .replace(/[&<>"']/g, "")}</p>
+                        <p>Thank you for choosing StayNest!</p>
+                    </div>
+                `
+            });
+
+            if (emailResult.error) {
+                console.error("Resend error:", emailResult.error);
+
+                return res.json({
+                    success: true,
+                    id: Number(id),
+                    status,
+                    emailSent: false,
+                    message: `Status updated to ${status}, but email could not be sent. Check the backend terminal.`
+                });
+            }
+
+            console.log("Status email sent. Visit ID:", id);
+
+            return res.json({
+                success: true,
+                id: Number(id),
+                status,
+                emailSent: true,
+                message: `Visit request ${status.toLowerCase()} and notification email sent.`
+            });
+        } catch (emailError) {
+            console.error("Email sending failed:", emailError);
+
+            return res.json({
+                success: true,
+                id: Number(id),
+                status,
+                emailSent: false,
+                message: `Status updated to ${status}, but email could not be sent. Check the backend terminal.`
+            });
+        }
+    } catch (error) {
+        console.error("Status update error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Could not update visit request status."
+        });
+    }
 });
 
 // Start server
