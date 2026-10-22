@@ -327,7 +327,7 @@ if (enquiryForm) {
         const message = document.getElementById("enquiryMessage").value;
 
 
-        fetch("http://127.0.0.1:5000/api/enquiries", {
+        fetch("https://staynest-kl5u.onrender.com/api/enquiries", {
 
             method: "POST",
 
@@ -443,7 +443,7 @@ if (visitForm) {
         const message = document.getElementById("visitMessage").value;
 
 
-        fetch("http://127.0.0.1:5000/api/visits", {
+        fetch("https://staynest-kl5u.onrender.com/api/visits", {
 
             method: "POST",
 
