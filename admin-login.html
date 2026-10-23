@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Login | StayNest</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #344650;
+        }
+
+        .admin-login-page {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: #f7f7f5;
+        }
+
+        .admin-login-box {
+            width: 100%;
+            max-width: 410px;
+            padding: 35px;
+            background: #fff;
+            border: 1px solid #d9d9d5;
+            border-radius: 12px;
+        }
+
+        .logo {
+            display: block;
+            margin-bottom: 25px;
+            color: #344650;
+            font-size: 23px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .admin-login-box h2 {
+            margin: 0 0 10px;
+            font-size: 26px;
+        }
+
+        .subtitle {
+            margin-bottom: 25px;
+            color: #626b6f;
+            line-height: 1.5;
+        }
+
+        .admin-login-box label {
+            display: block;
+            margin: 16px 0 7px;
+            font-weight: 600;
+        }
+
+        .admin-login-box input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d9d9d5;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .admin-login-box input:focus {
+            outline: 2px solid #aab7bc;
+            border-color: #344650;
+        }
+
+        .admin-login-box button {
+            width: 100%;
+            margin-top: 24px;
+            padding: 13px;
+            border: none;
+            border-radius: 6px;
+            background: #344650;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .admin-login-box button:disabled {
+            opacity: 0.7;
+            cursor: wait;
+        }
+
+        #loginMessage {
+            margin: 16px 0 0;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .back-home {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #344650;
+            text-decoration: none;
+        }
+
+        .back-home:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="admin-login-page">
+        <section class="admin-login-box">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-house"></i>
+                <span>StayNest</span>
+            </a>
+
+            <h2>Admin Login</h2>
+
+            <p class="subtitle">
+                Login to manage StayNest enquiries and visit requests.
+            </p>
+
+            <form id="adminLoginForm">
+                <label for="adminEmail">Email Address</label>
+                <input
+                    type="email"
+                    id="adminEmail"
+                    placeholder="Enter admin email"
+                    autocomplete="username"
+                    required
+                >
+
+                <label for="adminPassword">Password</label>
+                <input
+                    type="password"
+                    id="adminPassword"
+                    placeholder="Enter password"
+                    autocomplete="current-password"
+                    required
+                >
+
+                <button type="submit" id="loginBtn">Login</button>
+            </form>
+
+            <p id="loginMessage" role="status" aria-live="polite"></p>
+
+            <a href="index.html" class="back-home">
+                ← Back to Home
+            </a>
+        </section>
+    </main>
+
+    <script>
+        const loginForm = document.getElementById("adminLoginForm");
+        const loginButton = document.getElementById("loginBtn");
+        const loginMessage = document.getElementById("loginMessage");
+
+        loginForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const email = document.getElementById("adminEmail").value.trim();
+            const password = document.getElementById("adminPassword").value;
+
+            loginMessage.textContent = "";
+            loginButton.disabled = true;
+            loginButton.textContent = "Checking...";
+
+            try {
+                const response = await fetch(
+                    "http://127.0.0.1:5000/api/admin/login",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ email, password })
+                    }
+                );
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    loginMessage.textContent = "Login successful! Opening dashboard...";
+                    loginMessage.style.color = "green";
+
+                    setTimeout(function () {
+                        window.location.href = "admin.html";
+                    }, 700);
+                } else {
+                    loginMessage.textContent =
+                        result.message || "Invalid email or password.";
+                    loginMessage.style.color = "#b42318";
+                    loginButton.disabled = false;
+                    loginButton.textContent = "Login";
+                }
+            } catch (error) {
+                loginMessage.textContent ="Error:" + error.message;
+                    
+                loginMessage.style.color = "#b42318";
+                loginButton.disabled = false;
+                loginButton.textContent = "Login";
+            }
+        });
+    </script>
+</body>
+</html>
