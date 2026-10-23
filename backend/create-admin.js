@@ -1,8 +1,8 @@
 const bcrypt = require("bcryptjs");
 const db = require("./database");
 
-const email = "staynestadmin75@gmail.com";
-const password = "Staynest2026";
+const email = process.env.ADMIN_EMAIL;
+const password = process.env.ADMIN_PASSWORD;
 
 const passwordHash = bcrypt.hashSync(password, 10);
 
@@ -27,7 +27,7 @@ try {
     }
 
     console.log("Email:", email);
-    console.log("Password:", password);
+   
 } catch (error) {
     console.error("Error:", error.message);
 } finally {
