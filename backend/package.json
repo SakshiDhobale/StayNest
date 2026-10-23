@@ -4,8 +4,8 @@
   "description": "StayNest Backend",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
-  },
+  "start": "node create-admin.js && node server.js"
+  }
   "keywords": [],
   "author": "",
   "license": "ISC",
