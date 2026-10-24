@@ -438,6 +438,7 @@ if (visitForm) {
 
         const name = document.getElementById("visitName").value;
         const phone = document.getElementById("visitPhone").value;
+        const email = document.getElementById("visitEmail").value;
         const date = document.getElementById("visitDate").value;
         const time = document.getElementById("visitTime").value;
         const message = document.getElementById("visitMessage").value;
@@ -455,6 +456,7 @@ if (visitForm) {
 
                 name: name,
                 phone: phone,
+                email: email,
                 date: date,
                 time: time,
                 message: message
