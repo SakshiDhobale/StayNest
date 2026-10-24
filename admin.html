@@ -487,92 +487,97 @@
         }
 
 
-        // Load Visit Requests
+// Load Visit Requests
+function loadVisits() {
+    fetch("https://staynest-kl5u.onrender.com/api/visits")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Could not load visit requests");
+            }
+            return response.json();
+        })
+        .then(data => {
+            const table = document.getElementById("visitTable");
+            const count = document.getElementById("visitCount");
 
-        function loadVisits() {
+            count.textContent = data.length;
 
-            fetch("https://staynest-kl5u.onrender.com/api/visits")
+            if (data.length === 0) {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="empty">
+                            No visit requests found.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
 
-                .then(response => response.json())
+            table.innerHTML = "";
 
-                .then(data => {
+            data.forEach(visit => {
+                const currentStatus = visit.status || "Pending";
 
-                    const table =
-                        document.getElementById("visitTable");
+                table.innerHTML += `
+                    <tr>
+                        <td>${visit.id}</td>
+                        <td><strong>${visit.name || "-"}</strong></td>
+                        <td>${visit.phone || "-"}</td>
+                        <td>${visit.email || "-"}</td>
+                        <td>${visit.date || "-"}</td>
+                        <td>${visit.time || "-"}</td>
+                        <td>
+                            <span class="status">${currentStatus}</span>
+                        </td>
+                        <td>
+                            <button type="button"
+                                onclick="updateVisitStatus(${visit.id}, 'Approved')">
+                                Approve
+                            </button>
+                            <button type="button"
+                                onclick="updateVisitStatus(${visit.id}, 'Rejected')">
+                                Reject
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        })
+        .catch(error => {
+            console.error("Visit Error:", error);
+            document.getElementById("visitTable").innerHTML = `
+                <tr>
+                    <td colspan="8" class="error">
+                        Unable to load visit requests.
+                    </td>
+                </tr>
+            `;
+        });
+}
 
-                    const count =
-                        document.getElementById("visitCount");
-
-                    count.textContent = data.length;
-
-                    if (data.length === 0) {
-
-                        table.innerHTML = `
-                            <tr>
-                                <td colspan="6" class="empty">
-                                    No visit requests found.
-                                </td>
-                            </tr>
-                        `;
-
-                        return;
-                    }
-
-                    table.innerHTML = "";
-
-                    data.forEach(visit => {
-
-                        table.innerHTML += `
-                            <tr>
-
-                                <td>${visit.id}</td>
-
-                                <td>
-                                    <strong>${visit.name}</strong>
-                                </td>
-
-                                <td>${visit.phone}</td>
-
-                                <td>${visit.date || "-"}</td>
-
-                                <td>
-                                    <span class="status">
-                                        ${visit.time || "-"}
-                                    </span>
-                                </td>
-
-                                <td>${visit.message || "-"}</td>
-
-                            </tr>
-                        `;
-
-                    });
-
-                })
-
-                .catch(error => {
-
-                    console.error(
-                        "Visit Error:",
-                        error
-                    );
-
-                    document.getElementById(
-                        "visitTable"
-                    ).innerHTML = `
-                        <tr>
-                            <td colspan="6" class="error">
-                                Unable to load visit requests.
-                            </td>
-                        </tr>
-                    `;
-
-                });
-
+// Update Visit Request Status
+function updateVisitStatus(id, status) {
+    fetch(`https://staynest-kl5u.onrender.com/api/visits/${id}/status`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ status: status })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message || (data.success ? "Status updated!" : "Update failed."));
+        if (data.success) {
+            loadVisits();
         }
+    })
+    .catch(error => {
+        console.error("Status Update Error:", error);
+        alert("Could not update visit status.");
+    });
+} 
 
-
-        // Load both sections
+ // Load both sections
 
         function loadDashboard() {
 
