@@ -245,7 +245,39 @@
                 text-align: center;
             }
         }
-    </style>
+   /* Visit Request Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.action-buttons button {
+    padding: 8px 13px;
+    border: none;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.approve-btn {
+    background: #e4eee7;
+    color: #2f6546;
+}
+
+.reject-btn {
+    background: #f7e7e5;
+    color: #984b45;
+}
+
+.action-buttons button:hover {
+    transform: translateY(-1px);
+    opacity: 0.85;
+}
+</style>
 </head>
 
 <body>
@@ -530,17 +562,24 @@ function loadVisits() {
                             <span class="status">${currentStatus}</span>
                         </td>
                         <td>
-                            <button type="button"
-                                onclick="updateVisitStatus(${visit.id}, 'Approved')">
-                                Approve
-                            </button>
-                            <button type="button"
-                                onclick="updateVisitStatus(${visit.id}, 'Rejected')">
-                                Reject
-                            </button>
-                        </td>
+     <div class="action-buttons">
+        <button
+            type="button"
+            class="approve-btn"
+            onclick="updateVisitStatus(${visit.id}, 'Approved')">
+            Approve
+        </button>
+
+        <button
+            type="button"
+            class="reject-btn"
+            onclick="updateVisitStatus(${visit.id}, 'Rejected')">
+            Reject
+        </button>
+    </div>
+</td>
                     </tr>
-                `;
+                ;
             });
         })
         .catch(error => {
