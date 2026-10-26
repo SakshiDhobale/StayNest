@@ -518,8 +518,6 @@
 
         }
 
-
-// Load Visit Requests
 // Load Visit Requests
 function loadVisits() {
     fetch("https://staynest-kl5u.onrender.com/api/visits")
@@ -597,7 +595,7 @@ function loadVisits() {
 }
 // Update Visit Request Status
 function updateVisitStatus(id, status) {
-    fetch(`https://staynest-kl5u.onrender.com/api/visits/${id}/status), {
+    fetch(`https://staynest-kl5u.onrender.com/api/visits/${id}/status`, {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json"
@@ -639,6 +637,6 @@ function updateVisitStatus(id, status) {
         loadDashboard();
 
     </script>
-
 </body>
 </html>
+
