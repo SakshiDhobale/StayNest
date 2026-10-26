@@ -14,6 +14,19 @@ db.prepare(`
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
 `).run();
+// Add status column to existing Enquiries table
+const enquiryColumns = db.prepare(
+    "PRAGMA table_info(enquiries)"
+).all();
+
+if (!enquiryColumns.some(column => column.name === "status")) {
+    db.prepare(`
+        ALTER TABLE enquiries
+        ADD COLUMN status TEXT NOT NULL DEFAULT 'Pending'
+    `).run();
+
+    console.log("Enquiry status column added successfully!");
+}
 
 // Create Visit Requests table
 db.prepare(`
