@@ -397,18 +397,18 @@
 
             <table>
 
-                <thead>
-
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Phone</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Message</th>
-                    </tr>
-
-                </thead>
+               <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+</thead>
 
                 <tbody id="visitTable">
 
@@ -520,6 +520,7 @@
 
 
 // Load Visit Requests
+// Load Visit Requests
 function loadVisits() {
     fetch("https://staynest-kl5u.onrender.com/api/visits")
         .then(response => {
@@ -562,28 +563,29 @@ function loadVisits() {
                             <span class="status">${currentStatus}</span>
                         </td>
                         <td>
-     <div class="action-buttons">
-        <button
-            type="button"
-            class="approve-btn"
-            onclick="updateVisitStatus(${visit.id}, 'Approved')">
-            Approve
-        </button>
+                            <div class="action-buttons">
+                                <button
+                                    type="button"
+                                    class="approve-btn"
+                                    onclick="updateVisitStatus(${visit.id}, 'Approved')">
+                                    Approve
+                                </button>
 
-        <button
-            type="button"
-            class="reject-btn"
-            onclick="updateVisitStatus(${visit.id}, 'Rejected')">
-            Reject
-        </button>
-    </div>
-</td>
+                                <button
+                                    type="button"
+                                    class="reject-btn"
+                                    onclick="updateVisitStatus(${visit.id}, 'Rejected')">
+                                    Reject
+                                </button>
+                            </div>
+                        </td>
                     </tr>
-                ;
+                `;
             });
         })
         .catch(error => {
             console.error("Visit Error:", error);
+
             document.getElementById("visitTable").innerHTML = `
                 <tr>
                     <td colspan="8" class="error">
@@ -593,10 +595,9 @@ function loadVisits() {
             `;
         });
 }
-
 // Update Visit Request Status
 function updateVisitStatus(id, status) {
-    fetch(`https://staynest-kl5u.onrender.com/api/visits/${id}/status`, {
+    fetch(`https://staynest-kl5u.onrender.com/api/visits/${id}/status), {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json"
