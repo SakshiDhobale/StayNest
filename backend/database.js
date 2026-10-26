@@ -51,49 +51,7 @@ if (!updatedVisitColumns.some(column => column.name === "email")) {
 
     console.log("Visit request email column added successfully!");
 }
-// Admin - Update Enquiry Status
-app.patch("/api/enquiries/:id/status", (req, res) => {
-    const { id } = req.params;
-    const { status } = req.body;
 
-    if (!["Pending", "Resolved"].includes(status)) {
-        return res.status(400).json({
-            success: false,
-            message: "Status must be Pending or Resolved."
-        });
-    }
-
-    try {
-        const enquiry = db.prepare(
-            "SELECT id FROM enquiries WHERE id = ?"
-        ).get(id);
-
-        if (!enquiry) {
-            return res.status(404).json({
-                success: false,
-                message: "Enquiry not found."
-            });
-        }
-
-        db.prepare(
-            "UPDATE enquiries SET status = ? WHERE id = ?"
-        ).run(status, id);
-
-        res.json({
-            success: true,
-            id: Number(id),
-            status,
-            message: `Enquiry marked as ${status}.`
-        });
-    } catch (error) {
-        console.error("Update enquiry status error:", error);
-
-        res.status(500).json({
-            success: false,
-            message: "Could not update enquiry status."
-        });
-    }
-});
 // Create Admin table
 db.prepare(`
     CREATE TABLE IF NOT EXISTS admins (
