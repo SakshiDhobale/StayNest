@@ -433,91 +433,94 @@
 
 
     <script>
+ // Load Enquiries
+function loadEnquiries() {
+    fetch("https://staynest-kl5u.onrender.com/api/enquiries")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Could not load enquiries");
+            }
+            return response.json();
+        })
+        .then(data => {
+            const table = document.getElementById("enquiryTable");
+            const count = document.getElementById("enquiryCount");
 
-        // Load Enquiries
+            count.textContent = data.length;
 
-        function loadEnquiries() {
+            if (data.length === 0) {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="empty">
+                            No enquiries found.
+                        </td>
+                    </tr>`;
+                return;
+            }
 
-            fetch("https://staynest-kl5u.onrender.com/api/enquiries")
+            table.innerHTML = "";
 
-                .then(response => response.json())
+            data.forEach(enquiry => {
+                const status = enquiry.status || "Pending";
 
-                .then(data => {
+                table.innerHTML += `
+                    <tr>
+                        <td>${enquiry.id}</td>
+                        <td><strong>${enquiry.name || "-"}</strong></td>
+                        <td>${enquiry.email || "-"}</td>
+                        <td>${enquiry.phone || "-"}</td>
+                        <td>${enquiry.message || "-"}</td>
+                        <td>${enquiry.created_at || "-"}</td>
+                        <td><span class="status">${status}</span></td>
+                        <td>
+                            ${
+                                status === "Resolved"
+                                    ? "Resolved"
+                                    : `<button type="button"
+                                        class="approve-btn"
+                                        onclick="updateEnquiryStatus(${Number(enquiry.id)}, 'Resolved')">
+                                        Mark as Resolved
+                                       </button>`
+                            }
+                        </td>
+                    </tr>`;
+            });
+        })
+        .catch(error => {
+            console.error("Enquiry Error:", error);
+            document.getElementById("enquiryTable").innerHTML = `
+                <tr>
+                    <td colspan="8" class="error">
+                        Unable to load enquiries.
+                    </td>
+                </tr>`;
+        });
+}
 
-                    const table =
-                        document.getElementById("enquiryTable");
 
-                    const count =
-                        document.getElementById("enquiryCount");
+// Update Enquiry Status
+function updateEnquiryStatus(id, status) {
+    fetch(`https://staynest-kl5u.onrender.com/api/enquiries/${id}/status`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ status: status })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                throw new Error(data.message || "Status update failed");
+            }
 
-                    count.textContent = data.length;
-
-                    if (data.length === 0) {
-
-                        table.innerHTML = `
-                            <tr>
-                                <td colspan="6" class="empty">
-                                    No enquiries found.
-                                </td>
-                            </tr>
-                        `;
-
-                        return;
-                    }
-
-                    table.innerHTML = "";
-
-                    data.forEach(enquiry => {
-
-                        table.innerHTML += `
-                            <tr>
-
-                                <td>${enquiry.id}</td>
-
-                                <td>
-                                    <strong>${enquiry.name}</strong>
-                                </td>
-
-                                <td>${enquiry.email}</td>
-
-                                <td>${enquiry.phone || "-"}</td>
-
-                                <td>${enquiry.message || "-"}</td>
-
-                                <td>
-                                    <span class="status">
-                                        ${enquiry.created_at}
-                                    </span>
-                                </td>
-
-                            </tr>
-                        `;
-
-                    });
-
-                })
-
-                .catch(error => {
-
-                    console.error(
-                        "Enquiry Error:",
-                        error
-                    );
-
-                    document.getElementById(
-                        "enquiryTable"
-                    ).innerHTML = `
-                        <tr>
-                            <td colspan="6" class="error">
-                                Unable to load enquiries.
-                            </td>
-                        </tr>
-                    `;
-
-                });
-
-        }
-
+            alert("Enquiry marked as Resolved!");
+            loadEnquiries();
+        })
+        .catch(error => {
+            console.error("Enquiry Status Error:", error);
+            alert("Could not update enquiry status. Please try again.");
+        });
+}
 // Load Visit Requests
 function loadVisits() {
     fetch("https://staynest-kl5u.onrender.com/api/visits")
