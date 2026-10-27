@@ -253,7 +253,7 @@ app.patch("/api/enquiries/:id/status", async (req, res) => {
             message: "Could not update enquiry status."
         });
     }
-});/
+});
 
 // Admin - Get Visit Requests
 app.get("/api/visits", (req, res) => {
