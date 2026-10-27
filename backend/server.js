@@ -159,8 +159,8 @@ app.get("/api/enquiries", (req, res) => {
     }
 });
 
-// Admin - Update Enquiry Status
-app.patch("/api/enquiries/:id/status", (req, res) => {
+// Admin - Update Enquiry Status and Send Email
+app.patch("/api/enquiries/:id/status", async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
@@ -173,7 +173,7 @@ app.patch("/api/enquiries/:id/status", (req, res) => {
 
     try {
         const enquiry = db.prepare(
-            "SELECT id FROM enquiries WHERE id = ?"
+            "SELECT id, name, email FROM enquiries WHERE id = ?"
         ).get(id);
 
         if (!enquiry) {
@@ -183,25 +183,77 @@ app.patch("/api/enquiries/:id/status", (req, res) => {
             });
         }
 
+        // Save the status in the database
         db.prepare(
             "UPDATE enquiries SET status = ? WHERE id = ?"
         ).run(status, id);
 
-        res.json({
+        // Send email only when marked Resolved
+        if (status === "Resolved" && enquiry.email) {
+            try {
+                const emailResult = await resend.emails.send({
+                    from: "StayNest <onboarding@resend.dev>",
+                    to: [enquiry.email],
+                    subject: "Your StayNest Enquiry Has Been Resolved",
+                    html: `
+                        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                            <h2>Hello ${String(enquiry.name || "there")
+                                .replace(/[&<>"']/g, "")},</h2>
+                            <p>Your enquiry submitted through StayNest
+                                has been marked as <strong>Resolved</strong>.</p>
+                            <p>Thank you for contacting StayNest!</p>
+                            <p>Regards,<br>StayNest Team</p>
+                        </div>
+                    `
+                });
+
+                if (emailResult.error) {
+                    console.error("Resend error:", emailResult.error);
+                    return res.json({
+                        success: true,
+                        id: Number(id),
+                        status,
+                        emailSent: false,
+                        message: "Status updated, but email could not be sent."
+                    });
+                }
+
+                return res.json({
+                    success: true,
+                    id: Number(id),
+                    status,
+                    emailSent: true,
+                    message: "Enquiry resolved and notification email sent."
+                });
+            } catch (emailError) {
+                console.error("Enquiry email failed:", emailError);
+                return res.json({
+                    success: true,
+                    id: Number(id),
+                    status,
+                    emailSent: false,
+                    message: "Status updated, but email could not be sent."
+                });
+            }
+        }
+
+        return res.json({
             success: true,
             id: Number(id),
             status,
+            emailSent: false,
             message: `Enquiry marked as ${status}.`
         });
+
     } catch (error) {
         console.error("Update enquiry status error:", error);
 
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: "Could not update enquiry status."
         });
     }
-});
+});/
 
 // Admin - Get Visit Requests
 app.get("/api/visits", (req, res) => {
