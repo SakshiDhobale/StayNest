@@ -1,7 +1,23 @@
+
 const Database = require("better-sqlite3");
 
 // Create / open StayNest database
 const db = new Database("staynest.db");
+
+// Helper: Add column only if it does not exist
+function addColumnIfMissing(tableName, columnName, definition) {
+    const columns = db.prepare(
+        `PRAGMA table_info(${tableName})`
+    ).all();
+
+    if (!columns.some(column => column.name === columnName)) {
+        db.prepare(
+            `ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${definition}`
+        ).run();
+
+        console.log(`${columnName} column added to ${tableName}`);
+    }
+}
 
 // Create Enquiries table
 db.prepare(`
@@ -14,19 +30,17 @@ db.prepare(`
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
 `).run();
-// Add status column to existing Enquiries table
-const enquiryColumns = db.prepare(
-    "PRAGMA table_info(enquiries)"
-).all();
 
-if (!enquiryColumns.some(column => column.name === "status")) {
-    db.prepare(`
-        ALTER TABLE enquiries
-        ADD COLUMN status TEXT NOT NULL DEFAULT 'Pending'
-    `).run();
+// Add Enquiry Management columns
+addColumnIfMissing(
+    "enquiries",
+    "status",
+    "TEXT NOT NULL DEFAULT 'Pending'"
+);
 
-    console.log("Enquiry status column added successfully!");
-}
+addColumnIfMissing("enquiries", "reply", "TEXT");
+addColumnIfMissing("enquiries", "replied_at", "DATETIME");
+addColumnIfMissing("enquiries", "resolved_at", "DATETIME");
 
 // Create Visit Requests table
 db.prepare(`
@@ -41,31 +55,16 @@ db.prepare(`
     )
 `).run();
 
-// Add status column to existing Visit Requests table
-const visitColumns = db.prepare("PRAGMA table_info(visits)").all();
+// Add missing Visit columns
+addColumnIfMissing(
+    "visits",
+    "status",
+    "TEXT NOT NULL DEFAULT 'Pending'"
+);
 
-if (!visitColumns.some(column => column.name === "status")) {
-    db.prepare(`
-        ALTER TABLE visits
-        ADD COLUMN status TEXT NOT NULL DEFAULT 'Pending'
-    `).run();
+addColumnIfMissing("visits", "email", "TEXT");
 
-    console.log("Visit request status column added successfully!");
-}
-
-// Add email column to existing Visit Requests table
-const updatedVisitColumns = db.prepare("PRAGMA table_info(visits)").all();
-
-if (!updatedVisitColumns.some(column => column.name === "email")) {
-    db.prepare(`
-        ALTER TABLE visits
-        ADD COLUMN email TEXT
-    `).run();
-
-    console.log("Visit request email column added successfully!");
-}
-
-// Create Admin table
+// Create Admin table with correct email column
 db.prepare(`
     CREATE TABLE IF NOT EXISTS admins (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -73,6 +72,10 @@ db.prepare(`
         password_hash TEXT NOT NULL
     )
 `).run();
+
+// Ensure email column exists in an older Admin table
+addColumnIfMissing("admins", "email", "TEXT");
+
 console.log("StayNest database connected successfully!");
 
 module.exports = db;
