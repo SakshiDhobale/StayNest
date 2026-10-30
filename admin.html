@@ -1,9 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>StayNest Admin Dashboard</title>
 
     <style>
@@ -24,8 +24,6 @@
             max-width: 1200px;
             margin: auto;
         }
-
-        /* Header */
 
         .top-bar {
             display: flex;
@@ -59,7 +57,8 @@
             margin-bottom: 4px;
         }
 
-        .subtitle {
+        .subtitle,
+        .section-label {
             color: #626b6f;
             font-size: 14px;
         }
@@ -87,17 +86,10 @@
         }
 
         .refresh-btn {
-            background: #ffffff;
+            background: white;
             color: #344650;
             border: 1px solid #d9d9d5;
         }
-
-        .back-btn:hover,
-        .refresh-btn:hover {
-            opacity: 0.9;
-        }
-
-        /* Summary Cards */
 
         .summary {
             display: grid;
@@ -107,7 +99,7 @@
         }
 
         .summary-card {
-            background: #ffffff;
+            background: white;
             border: 1px solid #d9d9d5;
             border-radius: 12px;
             padding: 22px;
@@ -125,10 +117,8 @@
             color: #344650;
         }
 
-        /* Sections */
-
         .section {
-            background: #ffffff;
+            background: white;
             padding: 25px;
             margin-bottom: 30px;
             border-radius: 12px;
@@ -147,19 +137,13 @@
 
         .section-header h2 {
             font-size: 20px;
+            margin-bottom: 6px;
         }
-
-        .section-label {
-            color: #626b6f;
-            font-size: 13px;
-        }
-
-        /* Tables */
 
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 700px;
+            min-width: 850px;
         }
 
         th,
@@ -192,21 +176,59 @@
             color: #344650;
             font-size: 12px;
             font-weight: 600;
+            white-space: nowrap;
         }
 
-        .empty {
-            color: #626b6f;
-            padding: 15px 0;
+        .resolved-status {
+            background: #e8eee9;
+            color: #34785a;
+        }
+
+        .pending-status {
+            background: #f1f1ef;
+            color: #344650;
+        }
+
+        .action-btn {
+            padding: 7px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 3px;
+            color: white;
+            font-size: 12px;
+        }
+
+        .approve-btn {
+            background: #34785a;
+        }
+
+        .reject-btn {
+            background: #a84b4b;
+        }
+
+        .reply-btn {
+            background: #344650;
+        }
+
+        .resolve-btn {
+            background: #626b6f;
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .empty,
+        .error {
+            padding: 15px;
             text-align: center;
         }
 
         .error {
-            color: #8a4b4b;
-            padding: 15px 0;
-            text-align: center;
+            color: #a84b4b;
         }
-
-        /* Footer */
 
         .footer {
             text-align: center;
@@ -215,10 +237,7 @@
             padding: 10px 0;
         }
 
-        /* Responsive */
-
         @media (max-width: 700px) {
-
             body {
                 padding: 18px;
             }
@@ -245,64 +264,16 @@
                 text-align: center;
             }
         }
-   /* Visit Request Action Buttons */
-.action-buttons {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.action-buttons button {
-    padding: 8px 13px;
-    border: none;
-    border-radius: 7px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.approve-btn {
-    background: #e4eee7;
-    color: #2f6546;
-
-    padding: 8px 13px;
-    border: none;
-    border-radius: 7px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    
-}
-
-.reject-btn {
-    background: #f7e7e5;
-    color: #984b45;
-
-    
-}
-
-.action-buttons button:hover {
-    transform: translateY(-1px);
-    opacity: 0.85;
-}
-</style>
+    </style>
 </head>
 
 <body>
-
     <div class="container">
 
         <!-- Header -->
-
         <div class="top-bar">
-
             <div class="brand">
-
-                <div class="brand-icon">
-                    <i>⌂</i>
-                </div>
+                <div class="brand-icon">⌂</div>
 
                 <div>
                     <h1>StayNest Admin</h1>
@@ -310,11 +281,9 @@
                         Manage enquiries and PG visit requests
                     </p>
                 </div>
-
             </div>
 
             <div class="top-actions">
-
                 <button class="refresh-btn" id="refreshBtn">
                     ↻ Refresh
                 </button>
@@ -322,16 +291,11 @@
                 <a href="index.html" class="back-btn">
                     ← Back to StayNest
                 </a>
-
             </div>
-
         </div>
 
-
-        <!-- Summary -->
-
+        <!-- Summary Cards -->
         <div class="summary">
-
             <div class="summary-card">
                 <span>Total Enquiries</span>
                 <strong id="enquiryCount">0</strong>
@@ -341,99 +305,73 @@
                 <span>Total Visit Requests</span>
                 <strong id="visitCount">0</strong>
             </div>
-
         </div>
 
-
-        <!-- Enquiries -->
-
+        <!-- Enquiries Section -->
         <div class="section">
-
             <div class="section-header">
-
                 <div>
                     <h2>Enquiries</h2>
                     <p class="section-label">
                         Messages received from StayNest users
                     </p>
                 </div>
-
             </div>
 
             <table>
-
                 <thead>
-    <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Phone</th>
-        <th>Message</th>
-        <th>Date</th>
-        <th>Status</th>
-        <th>Actions</th>
-    </tr>
-</thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Message</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
 
                 <tbody id="enquiryTable">
-
                     <tr>
-                        <td colspan="8">
-                            Loading...
-                        </td>
+                        <td colspan="8">Loading...</td>
                     </tr>
-
                 </tbody>
-
             </table>
-
         </div>
 
-
-        <!-- Visit Requests -->
-
+        <!-- Visit Requests Section -->
         <div class="section">
-
             <div class="section-header">
-
                 <div>
                     <h2>Visit Requests</h2>
                     <p class="section-label">
                         PG visit requests submitted by users
                     </p>
                 </div>
-
             </div>
 
             <table>
-
-               <thead>
-    <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Phone</th>
-        <th>Email</th>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Status</th>
-        <th>Actions</th>
-    </tr>
-</thead>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Message</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
 
                 <tbody id="visitTable">
-
                     <tr>
-                        <td colspan="8">
-                            Loading...
-                        </td>
+                        <td colspan="8">Loading...</td>
                     </tr>
-
                 </tbody>
-
             </table>
-
         </div>
-
 
         <div class="footer">
             StayNest Admin Dashboard
@@ -441,215 +379,401 @@
 
     </div>
 
-
     <script>
- // Load Enquiries
-function loadEnquiries() {
-    fetch("https://staynest-kl5u.onrender.com/api/enquiries")
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Could not load enquiries");
-            }
-            return response.json();
-        })
-        .then(data => {
+        const API_URL = "https://staynest-kl5u.onrender.com";
+
+        // Load Enquiries
+        async function loadEnquiries() {
             const table = document.getElementById("enquiryTable");
             const count = document.getElementById("enquiryCount");
 
-            count.textContent = data.length;
+            try {
+                const response = await fetch(
+                    `${API_URL}/api/enquiries`
+                );
 
-            if (data.length === 0) {
+                if (!response.ok) {
+                    throw new Error("Failed to load enquiries");
+                }
+
+                const data = await response.json();
+
+                count.textContent = data.length;
+                table.innerHTML = "";
+
+                if (data.length === 0) {
+                    table.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="empty">
+                                No enquiries found.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                data.forEach(enquiry => {
+                    const row = document.createElement("tr");
+
+                    const values = [
+                        enquiry.id,
+                        enquiry.name,
+                        enquiry.email,
+                        enquiry.phone || "-",
+                        enquiry.message || "-",
+                        enquiry.created_at || "-"
+                    ];
+
+                    values.forEach(value => {
+                        const cell = document.createElement("td");
+                        cell.textContent = value;
+                        row.appendChild(cell);
+                    });
+
+                    // Status
+                    const status = enquiry.status || "Pending";
+
+                    const statusCell = document.createElement("td");
+                    const statusBadge = document.createElement("span");
+
+                    statusBadge.className =
+                        "status " +
+                        (status === "Resolved"
+                            ? "resolved-status"
+                            : "pending-status");
+
+                    statusBadge.textContent = status;
+
+                    statusCell.appendChild(statusBadge);
+                    row.appendChild(statusCell);
+
+                    // Actions
+                    const actionsCell = document.createElement("td");
+
+                    const replyButton =
+                        document.createElement("button");
+
+                    replyButton.type = "button";
+                    replyButton.className =
+                        "action-btn reply-btn";
+                    replyButton.textContent = "Reply";
+
+                    replyButton.addEventListener("click", () => {
+                        sendEnquiryReply(enquiry.id);
+                    });
+
+                    actionsCell.appendChild(replyButton);
+
+                    if (status !== "Resolved") {
+                        const resolveButton =
+                            document.createElement("button");
+
+                        resolveButton.type = "button";
+                        resolveButton.className =
+                            "action-btn resolve-btn";
+
+                        resolveButton.textContent = "Mark Resolved";
+
+                        resolveButton.addEventListener("click", () => {
+                            updateEnquiryStatus(
+                                enquiry.id,
+                                "Resolved"
+                            );
+                        });
+
+                        actionsCell.appendChild(resolveButton);
+                    }
+
+                    row.appendChild(actionsCell);
+                    table.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error("Enquiry Error:", error);
+
                 table.innerHTML = `
                     <tr>
-                        <td colspan="8" class="empty">
-                            No enquiries found.
+                        <td colspan="8" class="error">
+                            Unable to load enquiries.
                         </td>
-                    </tr>`;
+                    </tr>
+                `;
+            }
+        }
+
+        // Send Custom Enquiry Reply Email
+        async function sendEnquiryReply(id) {
+            const reply = prompt(
+                "Write your reply message:"
+            );
+
+            if (reply === null || !reply.trim()) {
                 return;
             }
 
-            table.innerHTML = "";
+            try {
+                const response = await fetch(
+                    `${API_URL}/api/enquiries/${id}/reply`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            reply: reply.trim()
+                        })
+                    }
+                );
 
-            data.forEach(enquiry => {
-                const status = enquiry.status || "Pending";
+                const result = await response.json();
 
-                table.innerHTML += `
-                    <tr>
-                        <td>${enquiry.id}</td>
-                        <td><strong>${enquiry.name || "-"}</strong></td>
-                        <td>${enquiry.email || "-"}</td>
-                        <td>${enquiry.phone || "-"}</td>
-                        <td>${enquiry.message || "-"}</td>
-                        <td>${enquiry.created_at || "-"}</td>
-                        <td><span class="status">${status}</span></td>
-                        <td>
-                            ${
-                                status === "Resolved"
-                                    ? "Resolved"
-                                    : `<button type="button"
-                                        class="approve-btn"
-                                        onclick="updateEnquiryStatus(${Number(enquiry.id)}, 'Resolved')">
-                                        Mark as Resolved
-                                       </button>`
-                            }
-                        </td>
-                    </tr>`;
-            });
-        })
-        .catch(error => {
-            console.error("Enquiry Error:", error);
-            document.getElementById("enquiryTable").innerHTML = `
-                <tr>
-                    <td colspan="8" class="error">
-                        Unable to load enquiries.
-                    </td>
-                </tr>`;
-        });
-}
+                if (!response.ok || !result.success) {
+                    alert(
+                        result.message ||
+                        "Could not send reply."
+                    );
+                    return;
+                }
 
+                alert(result.message);
+                await loadEnquiries();
 
-// Update Enquiry Status
-function updateEnquiryStatus(id, status) {
-    fetch(`https://staynest-kl5u.onrender.com/api/enquiries/${id}/status`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ status: status })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (!data.success) {
-                throw new Error(data.message || "Status update failed");
+            } catch (error) {
+                console.error("Reply Error:", error);
+
+                alert(
+                    "Unable to send email. Please check backend connection."
+                );
+            }
+        }
+
+        // Mark Enquiry as Resolved
+        async function updateEnquiryStatus(id, status) {
+            const confirmed = confirm(
+                "Are you sure you want to mark this enquiry as resolved?"
+            );
+
+            if (!confirmed) {
+                return;
             }
 
-            alert("Enquiry marked as Resolved!");
-            loadEnquiries();
-        })
-        .catch(error => {
-            console.error("Enquiry Status Error:", error);
-            alert("Could not update enquiry status. Please try again.");
-        });
-}
-// Load Visit Requests
-function loadVisits() {
-    fetch("https://staynest-kl5u.onrender.com/api/visits")
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Could not load visit requests");
+            try {
+                const response = await fetch(
+                    `${API_URL}/api/enquiries/${id}/status`,
+                    {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            status: status
+                        })
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    alert(
+                        result.message ||
+                        "Could not update enquiry status."
+                    );
+                    return;
+                }
+
+                alert(result.message);
+                await loadEnquiries();
+
+            } catch (error) {
+                console.error("Resolve Error:", error);
+
+                alert(
+                    "Unable to update enquiry status. Check backend connection."
+                );
             }
-            return response.json();
-        })
-        .then(data => {
+        }
+
+        // Load Visit Requests
+        async function loadVisits() {
             const table = document.getElementById("visitTable");
             const count = document.getElementById("visitCount");
 
-            count.textContent = data.length;
+            try {
+                const response = await fetch(
+                    `${API_URL}/api/visits`
+                );
 
-            if (data.length === 0) {
+                if (!response.ok) {
+                    throw new Error("Failed to load visit requests");
+                }
+
+                const data = await response.json();
+
+                count.textContent = data.length;
+                table.innerHTML = "";
+
+                if (data.length === 0) {
+                    table.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="empty">
+                                No visit requests found.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                data.forEach(visit => {
+                    const row = document.createElement("tr");
+
+                    const values = [
+                        visit.id,
+                        visit.name,
+                        visit.phone,
+                        visit.date || "-",
+                        visit.time || "-",
+                        visit.message || "-"
+                    ];
+
+                    values.forEach(value => {
+                        const cell = document.createElement("td");
+                        cell.textContent = value;
+                        row.appendChild(cell);
+                    });
+
+                    // Visit Status
+                    const statusCell = document.createElement("td");
+                    const statusBadge = document.createElement("span");
+                    const status = visit.status || "Pending";
+
+                    statusBadge.className = "status";
+                    statusBadge.textContent = status;
+
+                    statusCell.appendChild(statusBadge);
+                    row.appendChild(statusCell);
+
+                    // Visit Actions
+                    const actionsCell = document.createElement("td");
+
+                    if (status === "Pending") {
+                        const approveButton =
+                            document.createElement("button");
+
+                        approveButton.type = "button";
+                        approveButton.className =
+                            "action-btn approve-btn";
+
+                        approveButton.textContent = "Approve";
+
+                        approveButton.addEventListener("click", () => {
+                            updateVisitStatus(
+                                visit.id,
+                                "Approved"
+                            );
+                        });
+
+                        const rejectButton =
+                            document.createElement("button");
+
+                        rejectButton.type = "button";
+                        rejectButton.className =
+                            "action-btn reject-btn";
+
+                        rejectButton.textContent = "Reject";
+
+                        rejectButton.addEventListener("click", () => {
+                            updateVisitStatus(
+                                visit.id,
+                                "Rejected"
+                            );
+                        });
+
+                        actionsCell.appendChild(approveButton);
+                        actionsCell.appendChild(rejectButton);
+
+                    } else {
+                        actionsCell.textContent = "-";
+                    }
+
+                    row.appendChild(actionsCell);
+                    table.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error("Visit Error:", error);
+
                 table.innerHTML = `
                     <tr>
-                        <td colspan="8" class="empty">
-                            No visit requests found.
+                        <td colspan="8" class="error">
+                            Unable to load visit requests.
                         </td>
                     </tr>
                 `;
+            }
+        }
+
+        // Approve or Reject Visit Request
+        async function updateVisitStatus(id, status) {
+            const confirmed = confirm(
+                `Are you sure you want to ${status.toLowerCase()} this visit request?`
+            );
+
+            if (!confirmed) {
                 return;
             }
 
-            table.innerHTML = "";
+            try {
+                const response = await fetch(
+                    `${API_URL}/api/visits/${id}/status`,
+                    {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            status: status
+                        })
+                    }
+                );
 
-            data.forEach(visit => {
-                const currentStatus = visit.status || "Pending";
+                const result = await response.json();
 
-                table.innerHTML += `
-                    <tr>
-                        <td>${visit.id}</td>
-                        <td><strong>${visit.name || "-"}</strong></td>
-                        <td>${visit.phone || "-"}</td>
-                        <td>${visit.email || "-"}</td>
-                        <td>${visit.date || "-"}</td>
-                        <td>${visit.time || "-"}</td>
-                        <td>
-                            <span class="status">${currentStatus}</span>
-                        </td>
-                        <td>
-                            <div class="action-buttons">
-                                <button
-                                    type="button"
-                                    class="approve-btn"
-                                    onclick="updateVisitStatus(${visit.id}, 'Approved')">
-                                    Approve
-                                </button>
+                if (!response.ok || !result.success) {
+                    alert(
+                        result.message ||
+                        "Unable to update visit status."
+                    );
+                    return;
+                }
 
-                                <button
-                                    type="button"
-                                    class="reject-btn"
-                                    onclick="updateVisitStatus(${visit.id}, 'Rejected')">
-                                    Reject
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-        })
-        .catch(error => {
-            console.error("Visit Error:", error);
+                alert(result.message);
+                await loadVisits();
 
-            document.getElementById("visitTable").innerHTML = `
-                <tr>
-                    <td colspan="8" class="error">
-                        Unable to load visit requests.
-                    </td>
-                </tr>
-            `;
-        });
-}
-// Update Visit Request Status
-function updateVisitStatus(id, status) {
-    fetch(`https://staynest-kl5u.onrender.com/api/visits/${id}/status`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ status: status })
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message || (data.success ? "Status updated!" : "Update failed."));
-        if (data.success) {
-            loadVisits();
-        }
-    })
-    .catch(error => {
-        console.error("Status Update Error:", error);
-        alert("Could not update visit status.");
-    });
-} 
+            } catch (error) {
+                console.error("Status Update Error:", error);
 
- // Load both sections
-
-        function loadDashboard() {
-
-            loadEnquiries();
-            loadVisits();
-
+                alert(
+                    "Backend connection failed. Please check the server."
+                );
+            }
         }
 
+        // Load both dashboard sections
+        async function loadDashboard() {
+            await Promise.all([
+                loadEnquiries(),
+                loadVisits()
+            ]);
+        }
 
-        // Refresh button
-
+        // Refresh Button
         document
             .getElementById("refreshBtn")
             .addEventListener("click", loadDashboard);
 
-
-        // Initial load
-
+        // Initial Dashboard Load
         loadDashboard();
 
     </script>
 </body>
 </html>
-
