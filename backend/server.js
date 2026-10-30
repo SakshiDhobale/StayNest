@@ -16,6 +16,20 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
 
+// Helper: Safely display text inside email HTML
+function escapeHTML(value) {
+    return String(value || "").replace(/[&<>"']/g, (char) => {
+        const entities = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        };
+        return entities[char];
+    });
+}
+
 // Home route
 app.get("/", (req, res) => {
     res.send("StayNest Backend is Running!");
@@ -86,12 +100,19 @@ app.post("/api/enquiries", (req, res) => {
     try {
         const { name, email, phone, message } = req.body;
 
+        if (!name || !email || !message) {
+            return res.status(400).json({
+                success: false,
+                message: "Name, email and message are required."
+            });
+        }
+
         const insertEnquiry = db.prepare(`
             INSERT INTO enquiries (name, email, phone, message)
             VALUES (?, ?, ?, ?)
         `);
 
-        insertEnquiry.run(name, email, phone, message);
+        insertEnquiry.run(name, email, phone || "", message);
 
         console.log("New Enquiry Saved to Database:", name);
 
@@ -155,25 +176,27 @@ app.get("/api/enquiries", (req, res) => {
         res.json(enquiries);
     } catch (error) {
         console.error("Get enquiries error:", error);
-        res.status(500).json({ message: "Could not load enquiries." });
+        res.status(500).json({
+            message: "Could not load enquiries."
+        });
     }
 });
 
-// Admin - Update Enquiry Status and Send Email
-app.patch("/api/enquiries/:id/status", async (req, res) => {
+// Admin - Send Custom Reply Email
+app.post("/api/enquiries/:id/reply", async (req, res) => {
     const { id } = req.params;
-    const { status } = req.body;
+    const { reply } = req.body;
 
-    if (!["Pending", "Resolved"].includes(status)) {
+    if (!reply || !reply.trim()) {
         return res.status(400).json({
             success: false,
-            message: "Status must be Pending or Resolved."
+            message: "Please enter a reply message."
         });
     }
 
     try {
         const enquiry = db.prepare(
-            "SELECT id, name, email FROM enquiries WHERE id = ?"
+            "SELECT * FROM enquiries WHERE id = ?"
         ).get(id);
 
         if (!enquiry) {
@@ -183,72 +206,121 @@ app.patch("/api/enquiries/:id/status", async (req, res) => {
             });
         }
 
-        // Save the status in the database
-        db.prepare(
-            "UPDATE enquiries SET status = ? WHERE id = ?"
-        ).run(status, id);
-
-        // Send email only when marked Resolved
-        if (status === "Resolved" && enquiry.email) {
-            try {
-                const emailResult = await resend.emails.send({
-                    from: "StayNest <onboarding@resend.dev>",
-                    to: [enquiry.email],
-                    subject: "Your StayNest Enquiry Has Been Resolved",
-                    html: `
-                        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-                            <h2>Hello ${String(enquiry.name || "there")
-                                .replace(/[&<>"']/g, "")},</h2>
-                            <p>Your enquiry submitted through StayNest
-                                has been marked as <strong>Resolved</strong>.</p>
-                            <p>Thank you for contacting StayNest!</p>
-                            <p>Regards,<br>StayNest Team</p>
-                        </div>
-                    `
-                });
-
-                if (emailResult.error) {
-                    console.error("Resend error:", emailResult.error);
-                    return res.json({
-                        success: true,
-                        id: Number(id),
-                        status,
-                        emailSent: false,
-                        message: "Status updated, but email could not be sent."
-                    });
-                }
-
-                return res.json({
-                    success: true,
-                    id: Number(id),
-                    status,
-                    emailSent: true,
-                    message: "Enquiry resolved and notification email sent."
-                });
-            } catch (emailError) {
-                console.error("Enquiry email failed:", emailError);
-                return res.json({
-                    success: true,
-                    id: Number(id),
-                    status,
-                    emailSent: false,
-                    message: "Status updated, but email could not be sent."
-                });
-            }
+        if (!enquiry.email) {
+            return res.status(400).json({
+                success: false,
+                message: "No email address is available for this enquiry."
+            });
         }
 
-        return res.json({
+        const cleanReply = reply.trim();
+
+        const emailResult = await resend.emails.send({
+            from: "StayNest <onboarding@resend.dev>",
+            to: [enquiry.email],
+            subject: "Reply to Your StayNest Enquiry",
+            html: `
+                <div style="font-family: Arial, sans-serif; line-height: 1.7; color: #344650;">
+                    <h2>Hello ${escapeHTML(enquiry.name)},</h2>
+
+                    <p>Thank you for contacting StayNest.</p>
+
+                    <p>Here is our response to your enquiry:</p>
+
+                    <div style="background: #f7f7f5; padding: 15px; border-radius: 8px;">
+                        ${escapeHTML(cleanReply).replace(/\n/g, "<br>")}
+                    </div>
+
+                    <p>If you have any further questions, feel free to contact us.</p>
+
+                    <p>Regards,<br><strong>StayNest Team</strong></p>
+                </div>
+            `
+        });
+
+        if (emailResult.error) {
+            console.error("Resend error:", emailResult.error);
+
+            return res.status(500).json({
+                success: false,
+                message: "Email could not be sent. Please check the backend terminal."
+            });
+        }
+
+        // Save reply only after successful email sending
+        db.prepare(`
+            UPDATE enquiries
+            SET reply = ?, replied_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        `).run(cleanReply, id);
+
+        console.log("Enquiry reply email sent. Enquiry ID:", id);
+
+        res.json({
+            success: true,
+            emailSent: true,
+            message: "Reply email sent successfully!"
+        });
+
+    } catch (error) {
+        console.error("Enquiry reply error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Could not send enquiry reply."
+        });
+    }
+});
+
+// Admin - Mark Enquiry as Resolved or Pending
+app.patch("/api/enquiries/:id/status", (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const allowedStatuses = ["Pending", "Resolved"];
+
+    if (!allowedStatuses.includes(status)) {
+        return res.status(400).json({
+            success: false,
+            message: "Status must be Pending or Resolved."
+        });
+    }
+
+    try {
+        const enquiry = db.prepare(
+            "SELECT * FROM enquiries WHERE id = ?"
+        ).get(id);
+
+        if (!enquiry) {
+            return res.status(404).json({
+                success: false,
+                message: "Enquiry not found."
+            });
+        }
+
+        db.prepare(`
+            UPDATE enquiries
+            SET status = ?,
+                resolved_at = CASE
+                    WHEN ? = 'Resolved' THEN CURRENT_TIMESTAMP
+                    ELSE NULL
+                END
+            WHERE id = ?
+        `).run(status, status, id);
+
+        console.log(`Enquiry ${id} status updated to ${status}`);
+
+        res.json({
             success: true,
             id: Number(id),
             status,
-            emailSent: false,
             message: `Enquiry marked as ${status}.`
         });
 
     } catch (error) {
-        console.error("Update enquiry status error:", error);
+        console.error("Enquiry status error:", error);
 
-        return res.status(500).json({
+        res.status(500).json({
             success: false,
             message: "Could not update enquiry status."
         });
@@ -265,7 +337,9 @@ app.get("/api/visits", (req, res) => {
         res.json(visits);
     } catch (error) {
         console.error("Get visits error:", error);
-        res.status(500).json({ message: "Could not load visit requests." });
+        res.status(500).json({
+            message: "Could not load visit requests."
+        });
     }
 });
 
@@ -284,7 +358,6 @@ app.patch("/api/visits/:id/status", async (req, res) => {
     }
 
     try {
-        // Find visit request
         const visit = db.prepare(
             "SELECT * FROM visits WHERE id = ?"
         ).get(id);
@@ -296,12 +369,10 @@ app.patch("/api/visits/:id/status", async (req, res) => {
             });
         }
 
-        // Save status before attempting email
         db.prepare(
             "UPDATE visits SET status = ? WHERE id = ?"
         ).run(status, id);
 
-        // Older requests may not have an email address
         if (!visit.email) {
             return res.json({
                 success: true,
@@ -312,7 +383,6 @@ app.patch("/api/visits/:id/status", async (req, res) => {
             });
         }
 
-        // Send status notification using Resend
         try {
             const emailResult = await resend.emails.send({
                 from: "StayNest <onboarding@resend.dev>",
@@ -320,16 +390,13 @@ app.patch("/api/visits/:id/status", async (req, res) => {
                 subject: `StayNest Visit Request ${status}`,
                 html: `
                     <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-                        <h2>Hello ${String(visit.name || "there")
-                            .replace(/[&<>"']/g, "")},</h2>
+                        <h2>Hello ${escapeHTML(visit.name || "there")},</h2>
                         <p>Your StayNest PG visit request has been
                             <strong>${status}</strong>.</p>
                         <p><strong>Visit date:</strong>
-                            ${String(visit.date || "Not specified")
-                                .replace(/[&<>"']/g, "")}</p>
+                            ${escapeHTML(visit.date || "Not specified")}</p>
                         <p><strong>Visit time:</strong>
-                            ${String(visit.time || "Not specified")
-                                .replace(/[&<>"']/g, "")}</p>
+                            ${escapeHTML(visit.time || "Not specified")}</p>
                         <p>Thank you for choosing StayNest!</p>
                     </div>
                 `
@@ -356,6 +423,7 @@ app.patch("/api/visits/:id/status", async (req, res) => {
                 emailSent: true,
                 message: `Visit request ${status.toLowerCase()} and notification email sent.`
             });
+
         } catch (emailError) {
             console.error("Email sending failed:", emailError);
 
@@ -367,6 +435,7 @@ app.patch("/api/visits/:id/status", async (req, res) => {
                 message: `Status updated to ${status}, but email could not be sent. Check the backend terminal.`
             });
         }
+
     } catch (error) {
         console.error("Status update error:", error);
 
@@ -381,3 +450,13 @@ app.patch("/api/visits/:id/status", async (req, res) => {
 app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+
+  
+        
+
+  
+
+        
+                    
+              
