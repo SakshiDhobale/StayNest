@@ -1,178 +1,133 @@
+document.addEventListener("DOMContentLoaded", function () {
 
-// StayNest JavaScript
+    // Mobile Menu
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
 
-// Mobile Navigation
-const menuToggle = document.getElementById("menuToggle");
-const navLinks = document.getElementById("navLinks");
+    if (menuToggle && navLinks) {
+        menuToggle.addEventListener("click", function () {
+            navLinks.classList.toggle("show");
+            menuToggle.setAttribute(
+                "aria-expanded",
+                navLinks.classList.contains("show")
+            );
+        });
+    }
 
-if (menuToggle && navLinks) {
-    menuToggle.addEventListener("click", function () {
-        const isOpen = navLinks.classList.toggle("active");
-        menuToggle.setAttribute("aria-expanded", isOpen);
-    });
-}
+    // Login Modal
+    const loginModal = document.getElementById("loginModal");
+    const loginBtn = document.getElementById("loginBtn");
+    const signupBtn = document.getElementById("signupBtn");
+    const mobileLoginBtn = document.getElementById("mobileLoginBtn");
+    const closeLogin = document.getElementById("closeLogin");
 
-// Login Modal
-const loginModal = document.getElementById("loginModal");
-const loginBtn = document.getElementById("loginBtn");
-const mobileLoginBtn = document.getElementById("mobileLoginBtn");
-const closeLogin = document.getElementById("closeLogin");
+    const loginSection = document.getElementById("loginSection");
+    const signupSection = document.getElementById("signupSection");
 
-function openLoginModal() {
+    function openLogin() {
+        if (loginModal) {
+            loginModal.classList.add("active");
+            if (loginSection) loginSection.style.display = "block";
+            if (signupSection) signupSection.style.display = "none";
+        }
+
+        if (navLinks) navLinks.classList.remove("show");
+    }
+
+    function openSignup() {
+        if (loginModal) {
+            loginModal.classList.add("active");
+            if (loginSection) loginSection.style.display = "none";
+            if (signupSection) signupSection.style.display = "block";
+        }
+
+        if (navLinks) navLinks.classList.remove("show");
+    }
+
+    function closeLoginModal() {
+        if (loginModal) loginModal.classList.remove("active");
+    }
+
+    if (loginBtn) loginBtn.addEventListener("click", openLogin);
+    if (mobileLoginBtn) mobileLoginBtn.addEventListener("click", openLogin);
+    if (signupBtn) signupBtn.addEventListener("click", openSignup);
+    if (closeLogin) closeLogin.addEventListener("click", closeLoginModal);
+
     if (loginModal) {
-        loginModal.style.display = "flex";
-        document.body.style.overflow = "hidden";
-
-        if (navLinks) {
-            navLinks.classList.remove("active");
-        }
+        loginModal.addEventListener("click", function (event) {
+            if (event.target === loginModal) {
+                closeLoginModal();
+            }
+        });
     }
-}
 
-function closeLoginModal() {
-    if (loginModal) {
-        loginModal.style.display = "none";
-        document.body.style.overflow = "auto";
+    // Switch between Login and Signup
+    const showSignup = document.getElementById("showSignup");
+    const showLogin = document.getElementById("showLogin");
+
+    if (showSignup) {
+        showSignup.addEventListener("click", function (event) {
+            event.preventDefault();
+            if (loginSection) loginSection.style.display = "none";
+            if (signupSection) signupSection.style.display = "block";
+        });
     }
-}
 
-if (loginBtn) {
-    loginBtn.addEventListener("click", openLoginModal);
-}
+    if (showLogin) {
+        showLogin.addEventListener("click", function (event) {
+            event.preventDefault();
+            if (signupSection) signupSection.style.display = "none";
+            if (loginSection) loginSection.style.display = "block";
+        });
+    }
 
-if (mobileLoginBtn) {
-    mobileLoginBtn.addEventListener("click", openLoginModal);
-}
+    // Homepage Search
+    const homeSearchForm = document.getElementById("homeSearchForm");
 
-if (closeLogin) {
-    closeLogin.addEventListener("click", closeLoginModal);
-}
+    if (homeSearchForm) {
+        homeSearchForm.addEventListener("submit", function (event) {
+            event.preventDefault();
 
-if (loginModal) {
-    loginModal.addEventListener("click", function (event) {
-        if (event.target === loginModal) {
+            const location = document.getElementById("homeLocation")?.value.trim() || "";
+            const budget = document.getElementById("homeBudget")?.value.trim() || "";
+            const facility = document.getElementById("homeFacility")?.value || "";
+
+            const params = new URLSearchParams();
+
+            if (location) params.set("location", location);
+            if (budget) params.set("budget", budget);
+            if (facility) params.set("facility", facility);
+
+            window.location.href = "explore.html?" + params.toString();
+        });
+    }
+
+    // Login Form
+    const loginForm = document.getElementById("loginForm");
+
+    if (loginForm) {
+        loginForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            alert("Login feature will be connected to the backend.");
+        });
+    }
+
+    // Signup Form
+    const signupForm = document.getElementById("signupForm");
+
+    if (signupForm) {
+        signupForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            alert("Signup feature will be connected to the backend.");
+        });
+    }
+
+    // Close Modal with Escape Key
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
             closeLoginModal();
+            if (navLinks) navLinks.classList.remove("show");
         }
     });
-}
 
-// Login and Signup Switch
-const showSignup = document.getElementById("showSignup");
-const showLogin = document.getElementById("showLogin");
-const loginSection = document.getElementById("loginSection");
-const signupSection = document.getElementById("signupSection");
-
-if (showSignup) {
-    showSignup.addEventListener("click", function (event) {
-        event.preventDefault();
-
-        loginSection.style.display = "none";
-        signupSection.style.display = "block";
-    });
-}
-
-if (showLogin) {
-    showLogin.addEventListener("click", function (event) {
-        event.preventDefault();
-
-        signupSection.style.display = "none";
-        loginSection.style.display = "block";
-    });
-}
-
-// Signup
-const signupForm = document.getElementById("signupForm");
-
-if (signupForm) {
-    signupForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-
-        const name = document.getElementById("signupName").value.trim();
-        const email = document.getElementById("signupEmail").value.trim();
-        const password = document.getElementById("signupPassword").value;
-
-        const user = {
-            name: name,
-            email: email,
-            password: password
-        };
-
-        localStorage.setItem("staynestUser", JSON.stringify(user));
-
-        alert("Signup successful! Please login.");
-
-        signupForm.reset();
-
-        signupSection.style.display = "none";
-        loginSection.style.display = "block";
-    });
-}
-
-// Login
-const loginForm = document.getElementById("loginForm");
-
-if (loginForm) {
-    loginForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-
-        const email = document.getElementById("loginEmail").value.trim();
-        const password = document.getElementById("loginPassword").value;
-
-        const savedUser = JSON.parse(
-            localStorage.getItem("staynestUser")
-        );
-
-        if (
-            savedUser &&
-            savedUser.email === email &&
-            savedUser.password === password
-        ) {
-            alert("Login successful! Welcome to StayNest.");
-
-            loginForm.reset();
-            closeLoginModal();
-
-        } else {
-            alert("Invalid email or password. Please signup first.");
-        }
-    });
-}
-
-// Quick Search
-const homeSearchForm = document.getElementById("homeSearchForm");
-
-if (homeSearchForm) {
-    homeSearchForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-
-        const location = document.getElementById("homeLocation").value.trim();
-        const budget = document.getElementById("homeBudget").value.trim();
-
-        const params = new URLSearchParams();
-
-        if (location) {
-            params.set("location", location);
-        }
-
-        if (budget) {
-            params.set("budget", budget);
-        }
-
-        window.location.href = "explore.html?" + params.toString();
-    });
-}
-
-// Escape Key
-document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape") {
-        closeLoginModal();
-
-        if (navLinks) {
-            navLinks.classList.remove("active");
-        }
-
-        if (menuToggle) {
-            menuToggle.setAttribute("aria-expanded", "false");
-        }
-    }
 });
