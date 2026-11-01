@@ -270,6 +270,7 @@ app.post("/api/auth/login", async (req, res) => {
     }
 });
 // Admin Login API
+// Admin Login API
 app.post("/api/admin/login", async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -281,26 +282,41 @@ app.post("/api/admin/login", async (req, res) => {
             });
         }
 
+        if (!process.env.ADMIN_SESSION_SECRET) {
+            throw new Error("Admin session secret is missing.");
+        }
+
+        const cleanEmail = email.trim().toLowerCase();
+
         const { data: admin, error } = await supabase
             .from("admins")
             .select("*")
-            .eq("email", email)
+            .eq("email", cleanEmail)
             .maybeSingle();
 
         if (error) {
             throw error;
         }
 
-        if (!admin || !bcrypt.compareSync(password, admin.password_hash)) {
+        if (
+            !admin ||
+            !bcrypt.compareSync(password, admin.password_hash)
+        ) {
             return res.status(401).json({
                 success: false,
                 message: "Invalid email or password."
             });
         }
 
+        const token = createAdminToken(cleanEmail);
+
         res.json({
             success: true,
-            message: "Login successful!"
+            message: "Login successful!",
+            token,
+            admin: {
+                email: cleanEmail
+            }
         });
 
     } catch (error) {
@@ -312,7 +328,6 @@ app.post("/api/admin/login", async (req, res) => {
         });
     }
 });
-
 // PG data
 const pgData = [
     {
