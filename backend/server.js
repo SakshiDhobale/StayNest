@@ -140,6 +140,51 @@ app.post("/api/auth/signup", async (req, res) => {
         });
     }
 });
+// User Login API
+app.post("/api/auth/login", async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required."
+            });
+        }
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: email.trim().toLowerCase(),
+            password
+        });
+
+        if (error) {
+            return res.status(401).json({
+                success: false,
+                message: error.message
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Login successful!",
+            user: {
+                id: data.user.id,
+                name: data.user.user_metadata?.full_name || "",
+                email: data.user.email,
+                phone: data.user.user_metadata?.phone || ""
+            },
+            session: data.session
+        });
+
+    } catch (error) {
+        console.error("User login error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Could not complete login. Please try again."
+        });
+    }
+});
 // Admin Login API
 app.post("/api/admin/login", async (req, res) => {
     try {
