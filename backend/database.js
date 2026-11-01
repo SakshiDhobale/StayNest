@@ -1,10 +1,11 @@
-
 const Database = require("better-sqlite3");
+const path = require("path");
 
-// Create / open StayNest database
-const db = new Database("staynest.db");
+// Legacy SQLite database (used for backup/migration only)
+const dbPath = path.join(__dirname, "staynest.db");
+const db = new Database(dbPath);
 
-// Helper: Add column only if it does not exist
+// Add a column only if it does not already exist
 function addColumnIfMissing(tableName, columnName, definition) {
     const columns = db.prepare(
         `PRAGMA table_info(${tableName})`
@@ -31,18 +32,13 @@ db.prepare(`
     )
 `).run();
 
-// Add Enquiry Management columns
-addColumnIfMissing(
-    "enquiries",
-    "status",
-    "TEXT NOT NULL DEFAULT 'Pending'"
-);
-
+// Add enquiry management columns
+addColumnIfMissing("enquiries", "status", "TEXT NOT NULL DEFAULT 'Pending'");
 addColumnIfMissing("enquiries", "reply", "TEXT");
 addColumnIfMissing("enquiries", "replied_at", "DATETIME");
 addColumnIfMissing("enquiries", "resolved_at", "DATETIME");
 
-// Create Visit Requests table
+// Create Visits table
 db.prepare(`
     CREATE TABLE IF NOT EXISTS visits (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,16 +51,11 @@ db.prepare(`
     )
 `).run();
 
-// Add missing Visit columns
-addColumnIfMissing(
-    "visits",
-    "status",
-    "TEXT NOT NULL DEFAULT 'Pending'"
-);
-
+// Add visit management columns
+addColumnIfMissing("visits", "status", "TEXT NOT NULL DEFAULT 'Pending'");
 addColumnIfMissing("visits", "email", "TEXT");
 
-// Create Admin table with correct email column
+// Create Admin table
 db.prepare(`
     CREATE TABLE IF NOT EXISTS admins (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -73,9 +64,6 @@ db.prepare(`
     )
 `).run();
 
-// Ensure email column exists in an older Admin table
-addColumnIfMissing("admins", "email", "TEXT");
-
-console.log("StayNest database connected successfully!");
+console.log("Legacy SQLite database connected successfully!");
 
 module.exports = db;
