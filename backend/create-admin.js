@@ -1,35 +1,57 @@
-const bcrypt = require("bcryptjs");
-const db = require("./database");
+require("dotenv").config();
 
+const bcrypt = require("bcryptjs");
+const { createClient } = require("@supabase/supabase-js");
+
+// Environment variables
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SECRET_KEY;
 const email = process.env.ADMIN_EMAIL;
 const password = process.env.ADMIN_PASSWORD;
 
-const passwordHash = bcrypt.hashSync(password, 10);
+async function createAdmin() {
+    try {
+        // Check required environment variables
+        if (!supabaseUrl || !supabaseKey) {
+            throw new Error("Supabase environment variables are missing.");
+        }
 
-try {
-    const existingAdmin = db.prepare(
-        "SELECT id FROM admins WHERE email = ?"
-    ).get(email);
+        if (!email || !password) {
+            throw new Error("ADMIN_EMAIL or ADMIN_PASSWORD is missing.");
+        }
 
-    if (existingAdmin) {
-        db.prepare(
-            "UPDATE admins SET password_hash = ? WHERE email = ?"
-        ).run(passwordHash, email);
+        // Connect to Supabase
+        const supabase = createClient(supabaseUrl, supabaseKey);
 
-        console.log("Admin password reset successfully!");
-    } else {
-        db.prepare(`
-            INSERT INTO admins (email, password_hash)
-            VALUES (?, ?)
-        `).run(email, passwordHash);
+        // Hash admin password
+        const passwordHash = await bcrypt.hash(password, 10);
 
-        console.log("Admin account created successfully!");
+        // Create or update admin account
+        const { data, error } = await supabase
+            .from("admins")
+            .upsert(
+                {
+                    email: email,
+                    password_hash: passwordHash
+                },
+                {
+                    onConflict: "email"
+                }
+            )
+            .select("id, email")
+            .single();
+
+        if (error) {
+            throw error;
+        }
+
+        console.log("Admin account created/updated successfully!");
+        console.log("Admin email:", data.email);
+
+    } catch (error) {
+        console.error("Admin creation failed:", error.message);
+        process.exitCode = 1;
     }
-
-    console.log("Email:", email);
-   
-} catch (error) {
-    console.error("Error:", error.message);
-} finally {
-    db.close();
 }
+
+createAdmin();
