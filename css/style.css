@@ -1105,4 +1105,41 @@ button {
         font-size: 23px;
     }
 }
+/* Desktop screen size adjustment */
 
+@media (min-width: 1200px) {
+    .nav-container {
+        max-width: 1450px;
+        padding-left: 5%;
+        padding-right: 5%;
+    }
+
+    .hero {
+        max-width: 1600px;
+        padding: 80px 5%;
+        min-height: 600px;
+    }
+
+    .hero-content h1 {
+        font-size: 62px;
+    }
+
+    .hero-image img {
+        height: 410px;
+    }
+
+    .quick-search {
+        max-width: 1250px;
+        padding: 45px 40px;
+    }
+
+    .why-staynest,
+    .explore-cta {
+        padding-top: 100px;
+        padding-bottom: 100px;
+    }
+
+    .explore-page {
+        max-width: 1450px;
+    }
+}
