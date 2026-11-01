@@ -4,6 +4,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 const { Resend } = require("resend");
 
 const app = express();
@@ -15,6 +16,89 @@ app.use(express.json());
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 let supabase;
+// Create secure admin session token
+function createAdminToken(email) {
+    const payload = {
+        email,
+        role: "admin",
+        expiresAt: Date.now() + (8 * 60 * 60 * 1000)
+    };
+
+    const encodedPayload = Buffer
+        .from(JSON.stringify(payload))
+        .toString("base64url");
+
+    const signature = crypto
+        .createHmac("sha256", process.env.ADMIN_SESSION_SECRET)
+        .update(encodedPayload)
+        .digest("base64url");
+
+    return `${encodedPayload}.${signature}`;
+}
+
+// Verify admin session token
+function verifyAdminToken(token) {
+    try {
+        const [payload, signature] = token.split(".");
+
+        if (!payload || !signature) return null;
+
+        const expectedSignature = crypto
+            .createHmac("sha256", process.env.ADMIN_SESSION_SECRET)
+            .update(payload)
+            .digest();
+
+        const actualSignature = Buffer.from(signature, "base64url");
+
+        if (
+            actualSignature.length !== expectedSignature.length ||
+            !crypto.timingSafeEqual(actualSignature, expectedSignature)
+        ) {
+            return null;
+        }
+
+        const admin = JSON.parse(
+            Buffer.from(payload, "base64url").toString()
+        );
+
+        if (
+            admin.role !== "admin" ||
+            admin.expiresAt < Date.now()
+        ) {
+            return null;
+        }
+
+        return admin;
+
+    } catch {
+        return null;
+    }
+}
+
+// Protect admin-only APIs
+function requireAdmin(req, res, next) {
+    const authorization = req.headers.authorization || "";
+
+    if (!authorization.startsWith("Bearer ")) {
+        return res.status(401).json({
+            success: false,
+            message: "Admin login required."
+        });
+    }
+
+    const token = authorization.slice(7);
+    const admin = verifyAdminToken(token);
+
+    if (!admin) {
+        return res.status(401).json({
+            success: false,
+            message: "Admin session expired. Please login again."
+        });
+    }
+
+    req.admin = admin;
+    next();
+}
 
 // Escape special characters before adding user data to email HTML
 function escapeHTML(value) {
