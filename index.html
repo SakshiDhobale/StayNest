@@ -1,556 +1,331 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>StayNest | Find Your Perfect PG</title>
 
-    <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-
-    <!-- Main CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <!-- ================= NAVBAR ================= -->
+<header class="navbar">
+    <div class="nav-container">
 
-    <header class="navbar">
+        <a href="index.html" class="logo">
+            <i class="fa-solid fa-house"></i>
+            <span>StayNest</span>
+        </a>
 
-        <div class="nav-container">
+        <nav class="nav-links" id="navLinks">
+            <a href="index.html" class="active">Home</a>
+            <a href="explore.html">Properties</a>
+            <a href="#why-staynest">Why StayNest</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
 
-            <!-- Logo -->
-            <a href="index.html" class="logo">
-                <i class="fa-solid fa-house"></i>
-                <span>StayNest</span>
-            </a>
-
-            <!-- Desktop Navigation -->
-            <nav class="nav-links" id="navLinks">
-
-                <a href="index.html" class="active">Home</a>
-
-                <a href="explore.html">Explore PGs</a>
-
-                <a href="about.html">About</a>
-
-                <a href="contact.html">Contact</a>
-
-                <!-- Mobile menu login links -->
-                <div class="mobile-menu-actions">
-
-                    <button type="button" id="mobileLoginBtn">
-                        Login
-                    </button>
-
-                    <a href="admin-login.html">
-                        Admin Login
-                    </a>
-
-                </div>
-
-            </nav>
-
-            <!-- Right Side Actions -->
-            <div class="nav-actions">
-
-                <button class="login-btn" id="loginBtn" type="button">
-                    Login
-                </button>
-
-                <a href="admin-login.html" class="admin-login-btn">
-                    Admin Login
-                </a>
-
+            <div class="mobile-menu-actions">
+                <button type="button" id="mobileLoginBtn">Login</button>
+                <a href="admin-login.html">Admin Login</a>
             </div>
+        </nav>
 
-            <!-- Hamburger Menu -->
-            <button class="menu-toggle"
-                id="menuToggle"
-                type="button"
-                aria-label="Open navigation menu"
-                aria-expanded="false">
-
-                <span></span>
-                <span></span>
-                <span></span>
-
-            </button>
-
+        <div class="nav-actions">
+            <button class="login-btn" id="loginBtn" type="button">Login</button>
+            <button class="signup-btn" id="signupBtn" type="button">Sign Up</button>
+            <a href="admin-login.html" class="admin-login-btn">Admin Login</a>
         </div>
 
-    </header>
+        <button class="menu-toggle" id="menuToggle"
+            type="button" aria-label="Open navigation menu"
+            aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
 
+    </div>
+</header>
 
-    <!-- ================= HERO SECTION ================= -->
+<main>
 
-    <main>
+    <!-- HERO SECTION -->
+    <section class="hero" id="home">
 
-        <section class="hero" id="home">
+        <div class="hero-content">
 
-            <div class="hero-content">
-
-                <p class="hero-tagline">
-                    <i class="fa-solid fa-house"></i>
-                    YOUR NEXT HOME STARTS HERE
-                </p>
-
-                <h1>
-                    Find a Place You Can
-                    <span>Call Home.</span>
-                </h1>
-
-                <p class="hero-description">
-                    Discover comfortable and convenient PG accommodation
-                    near your college or workplace. Explore different
-                    options and find a place that suits your needs.
-                </p>
-
-                <!-- Hero Buttons -->
-                <div class="hero-buttons">
-
-                    <a href="explore.html" class="primary-btn">
-                        Explore PGs
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-
-                    <a href="about.html" class="secondary-btn">
-                        Learn More
-                    </a>
-
-                </div>
-
-                <!-- Small Information -->
-                <div class="hero-highlights">
-
-                    <div class="highlight-item">
-
-                        <i class="fa-solid fa-location-dot"></i>
-
-                        <div>
-                            <strong>Convenient Locations</strong>
-                            <span>Explore nearby PG options</span>
-                        </div>
-
-                    </div>
-
-                    <div class="highlight-item">
-
-                        <i class="fa-solid fa-bed"></i>
-
-                        <div>
-                            <strong>Room Options</strong>
-                            <span>Choose according to your needs</span>
-                        </div>
-
-                    </div>
-
-                </div>
-
+            <div class="hero-tagline">
+                <i class="fa-solid fa-location-dot"></i>
+                Student Friendly PGs
             </div>
 
-
-            <!-- Hero Image -->
-            <div class="hero-image">
-
-                <img src="images/hero-room.jpg"
-                    alt="Comfortable and modern PG accommodation">
-
-                <div class="hero-image-card">
-
-                    <div class="hero-card-icon">
-                        <i class="fa-solid fa-house-circle-check"></i>
-                    </div>
-
-                    <div>
-                        <strong>Find Your Space</strong>
-                        <span>Explore StayNest PG listings</span>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- ================= QUICK SEARCH ================= -->
-
-        <section class="quick-search">
-
-            <div class="search-heading">
-
-                <h2>Looking for a PG?</h2>
-
-                <p>
-                    Start exploring accommodation options that match your needs.
-                </p>
-
-            </div>
-
-            <form id="homeSearchForm" class="home-search-form">
-
-                <div class="search-field">
-
-                    <label for="homeLocation">
-                        Location
-                    </label>
-
-                    <div class="search-input">
-
-                        <i class="fa-solid fa-location-dot"></i>
-
-                        <input
-                            type="text"
-                            id="homeLocation"
-                            placeholder="Enter preferred location">
-
-                    </div>
-
-                </div>
-
-
-                <div class="search-field">
-
-                    <label for="homeBudget">
-                        Monthly Budget
-                    </label>
-
-                    <div class="search-input">
-
-                        <i class="fa-solid fa-indian-rupee-sign"></i>
-
-                        <input
-                            type="number"
-                            id="homeBudget"
-                            placeholder="Maximum budget">
-
-                    </div>
-
-                </div>
-
-
-                <button type="submit" class="search-submit-btn">
-
-                    Search PGs
-
-                    <i class="fa-solid fa-arrow-right"></i>
-
-                </button>
-
-            </form>
-
-        </section>
-
-
-        <!-- ================= WHY STAYNEST ================= -->
-
-        <section class="why-staynest" id="why-staynest">
-
-            <div class="section-heading">
-
-                <p class="section-tag">WHY STAYNEST</p>
-
-                <h2>A Simpler Way to Find Your Stay</h2>
-
-                <p>
-                    Finding accommodation should be simple.
-                    StayNest helps you explore PG options in one place.
-                </p>
-
-            </div>
-
-
-            <div class="benefits-grid">
-
-                <div class="benefit-card">
-
-                    <div class="benefit-icon">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </div>
-
-                    <h3>Easy Search</h3>
-
-                    <p>
-                        Explore PG options according to location
-                        and monthly budget.
-                    </p>
-
-                </div>
-
-
-                <div class="benefit-card">
-
-                    <div class="benefit-icon">
-                        <i class="fa-solid fa-bed"></i>
-                    </div>
-
-                    <h3>Room Information</h3>
-
-                    <p>
-                        Check available room types, facilities
-                        and accommodation details.
-                    </p>
-
-                </div>
-
-
-                <div class="benefit-card">
-
-                    <div class="benefit-icon">
-                        <i class="fa-solid fa-calendar-check"></i>
-                    </div>
-
-                    <h3>Visit Requests</h3>
-
-                    <p>
-                        Submit a request to visit a PG
-                        before making your decision.
-                    </p>
-
-                </div>
-
-
-                <div class="benefit-card">
-
-                    <div class="benefit-icon">
-                        <i class="fa-solid fa-envelope"></i>
-                    </div>
-
-                    <h3>Easy Enquiry</h3>
-
-                    <p>
-                        Contact us to ask questions and
-                        get more information about a PG.
-                    </p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- ================= EXPLORE CTA ================= -->
-
-        <section class="explore-cta">
-
-            <div class="cta-content">
-
-                <p class="section-tag">YOUR SPACE, YOUR CHOICE</p>
-
-                <h2>Ready to Find Your Next Stay?</h2>
-
-                <p>
-                    Explore available PG options and find
-                    accommodation that fits your requirements.
-                </p>
-
-                <a href="explore.html" class="primary-btn">
-                    Explore All PGs
-                    <i class="fa-solid fa-arrow-right"></i>
-                </a>
-
-            </div>
-
-        </section>
-
-    </main>
-
-
-    <!-- ================= FOOTER ================= -->
-
-    <footer class="footer" id="contact">
-
-        <div class="footer-container">
-
-            <div class="footer-about">
-
-                <a href="index.html" class="footer-logo">
-                    <i class="fa-solid fa-house"></i>
-                    StayNest
-                </a>
-
-                <p>
-                    Discover comfortable PG accommodation
-                    near your college or workplace with StayNest.
-                </p>
-
-            </div>
-
-
-            <div class="footer-links">
-
-                <h3>Quick Links</h3>
-
-                <a href="index.html">Home</a>
-
-                <a href="explore.html">Explore PGs</a>
-
-                <a href="about.html">About Us</a>
-
-                <a href="contact.html">Contact Us</a>
-
-            </div>
-
-
-            <div class="footer-contact">
-
-                <h3>Contact Information</h3>
-
-                <p>
-                    <i class="fa-solid fa-envelope"></i>
-                    staynest@example.com
-                </p>
-
-                <p>
-                    <i class="fa-solid fa-phone"></i>
-                    +91 98765 43210
-                </p>
-
-                <p>
-                    <i class="fa-solid fa-location-dot"></i>
-                    Nagpur, Maharashtra
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="footer-bottom">
-
-            <p>
-                © 2026 StayNest. All rights reserved.
+            <h1>
+                Find a Place You Can
+                <span>Call Home.</span>
+            </h1>
+
+            <p class="hero-description">
+                Discover comfortable PG accommodations near your
+                college with facilities that make student life easier.
             </p>
 
+            <div class="hero-buttons">
+                <a href="explore.html" class="primary-btn">
+                    Explore PGs
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+                <a href="about.html" class="secondary-btn">
+                    Learn More
+                </a>
+            </div>
+
+            <div class="hero-stats">
+                <div>
+                    <strong>3+</strong>
+                    <span>PG Options</span>
+                </div>
+
+                <div>
+                    <strong>3+</strong>
+                    <span>Locations</span>
+                </div>
+
+                <div>
+                    <strong>4.8★</strong>
+                    <span>Average Rating</span>
+                </div>
+            </div>
+
         </div>
 
-    </footer>
+        <div class="hero-image">
 
+            <img src="images/hero-room.jpg"
+                alt="Comfortable PG accommodation room">
 
-    <!-- ================= LOGIN MODAL ================= -->
+            <div class="floating-badge badge-top">
+                <i class="fa-solid fa-circle-check"></i>
+                <span><strong>Student Friendly PGs</strong> Comfortable Stay</span>
+            </div>
 
-    <div class="auth-modal" id="loginModal">
+            <div class="floating-badge badge-rating">
+                <i class="fa-solid fa-star"></i>
+                <span><strong>4.8 / 5</strong> Student Rating</span>
+            </div>
 
-        <div class="auth-box">
+            <div class="floating-badge badge-bottom">
+                <i class="fa-solid fa-wifi"></i>
+                <span>Wi-Fi Available</span>
+            </div>
 
-            <button type="button"
-                class="close-modal"
-                id="closeLogin"
-                aria-label="Close login">
+        </div>
 
-                <i class="fa-solid fa-xmark"></i>
+    </section>
 
+    <!-- QUICK SEARCH -->
+    <section class="quick-search">
+
+        <form id="homeSearchForm" class="home-search-form">
+
+            <div class="search-field">
+                <i class="fa-solid fa-location-dot"></i>
+                <input type="text" id="homeLocation"
+                    placeholder="Enter location">
+            </div>
+
+            <div class="search-field">
+                <i class="fa-solid fa-indian-rupee-sign"></i>
+                <input type="number" id="homeBudget"
+                    placeholder="Max budget">
+            </div>
+
+            <div class="search-field">
+                <i class="fa-solid fa-building"></i>
+                <select id="homeFacility">
+                    <option value="">PG Type / Facility</option>
+                    <option value="Wi-Fi">Wi-Fi</option>
+                    <option value="Meals">Meals</option>
+                    <option value="AC">AC</option>
+                    <option value="Furnished">Furnished</option>
+                </select>
+            </div>
+
+            <button type="submit" class="search-submit-btn">
+                Search <i class="fa-solid fa-magnifying-glass"></i>
             </button>
 
+        </form>
 
-            <!-- Login Section -->
-            <div id="loginSection">
+    </section>
 
-                <h2>Welcome Back</h2>
+    <!-- WHY STAYNEST -->
+    <section class="why-staynest" id="why-staynest">
 
-                <p>Login to your StayNest account.</p>
+        <div class="section-heading">
+            <p class="section-tag">WHY STAYNEST</p>
+            <h2>A Simpler Way to Find Your Stay</h2>
+            <p>
+                Explore PG options and accommodation details
+                according to your needs.
+            </p>
+        </div>
 
-                <form id="loginForm">
+        <div class="benefits-grid">
 
-                    <label for="loginEmail">Email Address</label>
-
-                    <input
-                        type="email"
-                        id="loginEmail"
-                        placeholder="Enter your email"
-                        required>
-
-                    <label for="loginPassword">Password</label>
-
-                    <input
-                        type="password"
-                        id="loginPassword"
-                        placeholder="Enter your password"
-                        required>
-
-                    <button type="submit" class="primary-btn">
-                        Login
-                    </button>
-
-                </form>
-
-                <p class="auth-switch">
-                    Don't have an account?
-
-                    <a href="#" id="showSignup">Sign Up</a>
-                </p>
-
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <h3>Easy Search</h3>
+                <p>Explore PG options according to location and budget.</p>
             </div>
 
-
-            <!-- Signup Section -->
-            <div id="signupSection" style="display: none;">
-
-                <h2>Create Account</h2>
-
-                <p>Create your StayNest account.</p>
-
-                <form id="signupForm">
-
-                    <label for="signupName">Full Name</label>
-
-                    <input
-                        type="text"
-                        id="signupName"
-                        placeholder="Enter your name"
-                        required>
-
-                    <label for="signupEmail">Email Address</label>
-
-                    <input
-                        type="email"
-                        id="signupEmail"
-                        placeholder="Enter your email"
-                        required>
-
-                    <label for="signupPassword">Password</label>
-
-                    <input
-                        type="password"
-                        id="signupPassword"
-                        placeholder="Create a password"
-                        required>
-
-                    <button type="submit" class="primary-btn">
-                        Create Account
-                    </button>
-
-                </form>
-
-                <p class="auth-switch">
-                    Already have an account?
-
-                    <a href="#" id="showLogin">Login</a>
-                </p>
-
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <i class="fa-solid fa-bed"></i>
+                </div>
+                <h3>Room Information</h3>
+                <p>Check room types, facilities and accommodation details.</p>
             </div>
 
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <h3>Visit Requests</h3>
+                <p>Submit a request to visit a PG before deciding.</p>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <i class="fa-solid fa-envelope"></i>
+                </div>
+                <h3>Easy Enquiry</h3>
+                <p>Send an enquiry to get more information about a PG.</p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- EXPLORE CTA -->
+    <section class="explore-cta">
+        <div class="cta-content">
+            <p class="section-tag">YOUR SPACE, YOUR CHOICE</p>
+            <h2>Ready to Find Your Next Stay?</h2>
+            <p>Explore PG options and find accommodation that fits your needs.</p>
+
+            <a href="explore.html" class="primary-btn">
+                Explore All PGs
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+    </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer" id="contact">
+    <div class="footer-container">
+
+        <div class="footer-about">
+            <a href="index.html" class="footer-logo">
+                <i class="fa-solid fa-house"></i> StayNest
+            </a>
+            <p>Discover comfortable PG accommodation near your college or workplace.</p>
+        </div>
+
+        <div class="footer-links">
+            <h3>Quick Links</h3>
+            <a href="index.html">Home</a>
+            <a href="explore.html">Explore PGs</a>
+            <a href="about.html">About Us</a>
+            <a href="contact.html">Contact Us</a>
+        </div>
+
+        <div class="footer-contact">
+            <h3>Contact Information</h3>
+            <p><i class="fa-solid fa-envelope"></i> staynest@example.com</p>
+            <p><i class="fa-solid fa-phone"></i> +91 98765 43210</p>
+            <p><i class="fa-solid fa-location-dot"></i> Nagpur, Maharashtra</p>
         </div>
 
     </div>
 
+    <div class="footer-bottom">
+        <p>© 2026 StayNest. All rights reserved.</p>
+    </div>
+</footer>
 
-    <!-- Main JavaScript -->
-    <script src="js/script.js"></script>
+<!-- LOGIN / SIGNUP MODAL -->
+<div class="auth-modal" id="loginModal">
+    <div class="auth-box">
+
+        <button type="button" class="close-modal" id="closeLogin"
+            aria-label="Close login">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div id="loginSection">
+            <h2>Welcome Back</h2>
+            <p>Login to your StayNest account.</p>
+
+            <form id="loginForm">
+                <label for="loginEmail">Email Address</label>
+                <input type="email" id="loginEmail"
+                    placeholder="Enter your email" required>
+
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword"
+                    placeholder="Enter your password" required>
+
+                <button type="submit" class="primary-btn">Login</button>
+            </form>
+
+            <p class="auth-switch">
+                Don't have an account?
+                <a href="#" id="showSignup">Sign Up</a>
+            </p>
+        </div>
+
+        <div id="signupSection" style="display:none;">
+            <h2>Create Account</h2>
+            <p>Create your StayNest account.</p>
+
+            <form id="signupForm">
+                <label for="signupName">Full Name</label>
+                <input type="text" id="signupName"
+                    placeholder="Enter your name" required>
+
+                <label for="signupEmail">Email Address</label>
+                <input type="email" id="signupEmail"
+                    placeholder="Enter your email" required>
+
+                <label for="signupPassword">Password</label>
+                <input type="password" id="signupPassword"
+                    placeholder="Create a password" required>
+
+                <button type="submit" class="primary-btn">Create Account</button>
+            </form>
+
+            <p class="auth-switch">
+                Already have an account?
+                <a href="#" id="showLogin">Login</a>
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<script src="js/script.js"></script>
 
 </body>
-
 </html>
