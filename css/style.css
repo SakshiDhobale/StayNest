@@ -827,3 +827,282 @@ button {
         align-items: stretch;
     }
 }
+
+/* =================================
+   EXPLORE PAGE STYLING
+================================= */
+
+.explore-page {
+    max-width: 1250px;
+    margin: 0 auto;
+    padding: 55px 30px 80px;
+}
+
+.explore-heading {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.explore-heading .section-label {
+    color: var(--gray);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+}
+
+.explore-heading h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.explore-heading > p:last-child {
+    color: var(--gray);
+    font-size: 14px;
+}
+
+/* FILTERS */
+
+.explore-filters {
+    display: flex;
+    align-items: end;
+    gap: 20px;
+    padding: 25px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 45px;
+}
+
+.filter-group {
+    flex: 1;
+}
+
+.filter-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.filter-group input,
+.filter-group select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    outline: none;
+    background: var(--white);
+    color: var(--text);
+    font-size: 13px;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+    border-color: var(--primary);
+}
+
+.explore-filters .primary-btn {
+    min-height: 44px;
+    white-space: nowrap;
+}
+
+/* LISTINGS */
+
+.explore-listings {
+    width: 100%;
+}
+
+.listings-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.listings-heading h2 {
+    font-size: 27px;
+    margin-bottom: 5px;
+}
+
+.listings-heading p {
+    font-size: 13px;
+    color: var(--gray);
+}
+
+/* PROPERTY GRID */
+
+.properties-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 25px;
+    align-items: start;
+}
+
+.properties-grid > p {
+    color: var(--gray);
+    padding: 20px 0;
+}
+
+.property-card {
+    min-width: 0;
+    overflow: hidden;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: 0.3s;
+}
+
+.property-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow);
+}
+
+.property-card img {
+    display: block;
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+}
+
+.property-info {
+    padding: 20px;
+}
+
+.property-info h3 {
+    font-size: 18px;
+    margin-bottom: 9px;
+}
+
+.property-location {
+    color: var(--gray);
+    font-size: 12px;
+    margin-bottom: 12px;
+}
+
+.property-price {
+    margin: 13px 0;
+}
+
+.property-price strong {
+    font-size: 20px;
+}
+
+.property-price span {
+    color: var(--gray);
+    font-size: 12px;
+}
+
+.property-rating {
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+.property-rating i {
+    color: #d6a644;
+}
+
+.property-info .primary-btn {
+    width: 100%;
+    text-align: center;
+}
+
+/* NO RESULTS */
+
+.no-properties {
+    text-align: center;
+    padding: 55px 20px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.no-properties i {
+    font-size: 35px;
+    color: var(--gray);
+    margin-bottom: 15px;
+}
+
+.no-properties h3 {
+    margin-bottom: 8px;
+}
+
+.no-properties p {
+    color: var(--gray);
+    font-size: 13px;
+}
+
+.no-properties[hidden] {
+    display: none !important;
+}
+
+/* EXPLORE FOOTER */
+
+.footer-content {
+    text-align: center;
+}
+
+.footer-content h2 {
+    font-size: 25px;
+    margin-bottom: 8px;
+}
+
+.footer-content p {
+    color: #e1e6e8;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+/* EXPLORE RESPONSIVE */
+
+@media (max-width: 850px) {
+    .properties-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .explore-filters {
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        min-width: 200px;
+    }
+}
+
+@media (max-width: 600px) {
+    .explore-page {
+        padding: 40px 18px 60px;
+    }
+
+    .explore-heading h1 {
+        font-size: 27px;
+    }
+
+    .explore-filters {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 20px;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+
+    .explore-filters .primary-btn {
+        width: 100%;
+    }
+
+    .properties-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .property-card img {
+        height: 220px;
+    }
+
+    .listings-heading h2 {
+        font-size: 23px;
+    }
+}
+
