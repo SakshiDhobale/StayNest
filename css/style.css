@@ -1,134 +1,615 @@
 
-document.addEventListener("DOMContentLoaded", function () {
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
-    // Hamburger Menu
-    const menuToggle = document.getElementById("menuToggle");
-    const navLinks = document.getElementById("navLinks");
+:root {
+    --primary: #344650;
+    --cream: #fff8e8;
+    --background: #f7f7f5;
+    --light: #f1f1ef;
+    --white: #ffffff;
+    --text: #344650;
+    --gray: #626b6f;
+    --border: #d9d9d5;
+    --shadow: 0 10px 30px rgba(52, 70, 80, 0.08);
+}
 
-    if (menuToggle && navLinks) {
-        menuToggle.addEventListener("click", function () {
-            navLinks.classList.toggle("show");
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-            menuToggle.setAttribute(
-                "aria-expanded",
-                navLinks.classList.contains("show")
-            );
-        });
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+/* NAVBAR */
+
+.navbar {
+    width: 100%;
+    min-height: 80px;
+    padding: 15px 7%;
+    background: var(--cream);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid var(--border);
+}
+
+.logo {
+    font-size: 27px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.logo i {
+    margin-right: 8px;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
+}
+
+.nav-links a {
+    font-size: 14px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--gray);
+}
+
+.nav-links .login-btn {
+    background: var(--primary);
+    color: var(--white);
+    padding: 11px 25px;
+    border-radius: 6px;
+}
+
+.menu-toggle {
+    display: none;
+    border: none;
+    background: none;
+    color: var(--primary);
+    font-size: 25px;
+}
+
+/* HERO SECTION */
+
+.hero {
+    min-height: 590px;
+    padding: 75px 7%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 45px;
+    background: var(--cream);
+}
+
+.hero-content {
+    max-width: 570px;
+}
+
+.hero-content h1 {
+    font-size: clamp(38px, 5vw, 58px);
+    line-height: 1.2;
+    margin-bottom: 22px;
+    font-weight: 700;
+}
+
+.hero-content p {
+    color: var(--gray);
+    font-size: 16px;
+    margin-bottom: 30px;
+}
+
+.hero-image {
+    width: 48%;
+    max-width: 600px;
+}
+
+.hero-image img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+}
+
+/* BUTTONS */
+
+.primary-btn,
+.secondary-btn {
+    display: inline-block;
+    padding: 13px 27px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: 0.3s;
+    border: none;
+}
+
+.primary-btn {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.primary-btn:hover {
+    background: #253740;
+    transform: translateY(-2px);
+}
+
+.secondary-btn {
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    margin-left: 10px;
+}
+
+.secondary-btn:hover {
+    background: var(--primary);
+    color: var(--white);
+}
+
+/* SEARCH SECTION */
+
+.search-section {
+    padding: 35px 7%;
+    background: var(--white);
+}
+
+.search-box {
+    max-width: 1050px;
+    margin: auto;
+    padding: 25px;
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    display: flex;
+    gap: 15px;
+    align-items: end;
+}
+
+.search-field {
+    flex: 1;
+}
+
+.search-field label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.search-field input,
+.search-field select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    outline: none;
+    background: var(--white);
+}
+
+.search-field input:focus,
+.search-field select:focus {
+    border-color: var(--primary);
+}
+
+/* COMMON SECTIONS */
+
+section {
+    scroll-margin-top: 90px;
+}
+
+.section-heading {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.section-heading h2 {
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.section-heading p {
+    color: var(--gray);
+    font-size: 14px;
+}
+
+.why-section,
+.about-section {
+    padding: 80px 7%;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.feature-card {
+    background: var(--white);
+    padding: 35px 25px;
+    text-align: center;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    transition: 0.3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow);
+}
+
+.feature-card i {
+    font-size: 32px;
+    color: var(--primary);
+    margin-bottom: 18px;
+}
+
+.feature-card h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.feature-card p {
+    font-size: 14px;
+    color: var(--gray);
+}
+
+/* EXPLORE PAGE */
+
+.explore-section {
+    padding: 65px 7%;
+}
+
+.explore-header {
+    margin-bottom: 30px;
+}
+
+.explore-header h1 {
+    font-size: 36px;
+    margin-bottom: 8px;
+}
+
+.filter-box {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 35px;
+    padding: 22px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.filter-box input,
+.filter-box select {
+    flex: 1;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
+.properties-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.property-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: 0.3s;
+}
+
+.property-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow);
+}
+
+.property-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.property-info {
+    padding: 22px;
+}
+
+.property-info h3 {
+    font-size: 19px;
+    margin-bottom: 8px;
+}
+
+.property-location,
+.property-rating {
+    color: var(--gray);
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.property-location i,
+.property-rating i {
+    margin-right: 6px;
+}
+
+.property-price {
+    margin: 15px 0;
+}
+
+.property-price strong {
+    font-size: 21px;
+}
+
+.property-price span {
+    color: var(--gray);
+    font-size: 13px;
+}
+
+.property-rating i {
+    color: #d6a644;
+}
+
+.property-info .primary-btn {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+}
+
+/* CTA SECTION */
+
+.cta-section {
+    padding: 70px 7%;
+    background: var(--primary);
+    color: var(--white);
+    text-align: center;
+}
+
+.cta-section h2 {
+    font-size: 32px;
+    margin-bottom: 15px;
+}
+
+.cta-section p {
+    margin-bottom: 25px;
+    color: #e1e6e8;
+}
+
+.cta-section .primary-btn {
+    background: var(--cream);
+    color: var(--primary);
+}
+
+/* FOOTER */
+
+.footer {
+    background: var(--primary);
+    color: var(--white);
+    padding: 45px 7%;
+    text-align: center;
+}
+
+.footer p {
+    font-size: 13px;
+    color: #e1e6e8;
+}
+
+/* LOGIN MODAL */
+
+.login-modal,
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.login-modal.active,
+.modal-overlay.active {
+    display: flex;
+}
+
+.login-box {
+    width: 100%;
+    max-width: 430px;
+    padding: 35px;
+    background: var(--white);
+    border-radius: 12px;
+    position: relative;
+    box-shadow: var(--shadow);
+}
+
+.close-login {
+    position: absolute;
+    right: 18px;
+    top: 12px;
+    border: none;
+    background: none;
+    font-size: 25px;
+    color: var(--gray);
+}
+
+.login-box h2 {
+    margin-bottom: 20px;
+}
+
+.login-box input {
+    width: 100%;
+    padding: 13px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
+.login-box button.primary-btn {
+    width: 100%;
+}
+
+.login-box p {
+    text-align: center;
+    font-size: 13px;
+    margin-top: 18px;
+}
+
+.login-box p a {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* EMPTY STATE */
+
+#noProperties {
+    text-align: center;
+    padding: 35px;
+    color: var(--gray);
+}
+
+/* RESPONSIVE DESIGN */
+
+@media (max-width: 900px) {
+    .navbar {
+        padding: 15px 5%;
     }
 
-    // Login Modal
-    const loginModal = document.getElementById("loginModal");
-    const loginBtn = document.getElementById("loginBtn");
-    const mobileLoginBtn = document.getElementById("mobileLoginBtn");
-    const closeLogin = document.getElementById("closeLogin");
-
-    function openLogin() {
-        if (loginModal) {
-            loginModal.classList.add("active");
-        }
-
-        if (navLinks) {
-            navLinks.classList.remove("show");
-        }
+    .nav-links {
+        gap: 18px;
     }
 
-    function closeLoginModal() {
-        if (loginModal) {
-            loginModal.classList.remove("active");
-        }
+    .hero {
+        padding: 55px 5%;
     }
 
-    if (loginBtn) {
-        loginBtn.addEventListener("click", openLogin);
+    .hero-content h1 {
+        font-size: 42px;
     }
 
-    if (mobileLoginBtn) {
-        mobileLoginBtn.addEventListener("click", openLogin);
+    .properties-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 650px) {
+    .navbar {
+        min-height: 70px;
     }
 
-    if (closeLogin) {
-        closeLogin.addEventListener("click", closeLoginModal);
+    .menu-toggle {
+        display: block;
     }
 
-    if (loginModal) {
-        loginModal.addEventListener("click", function (event) {
-            if (event.target === loginModal) {
-                closeLoginModal();
-            }
-        });
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        padding: 22px;
+        background: var(--cream);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 18px;
+        border-top: 1px solid var(--border);
     }
 
-    // Login and Signup Switch
-    const loginSection = document.getElementById("loginSection");
-    const signupSection = document.getElementById("signupSection");
-
-    const showSignup = document.getElementById("showSignup");
-    const showLogin = document.getElementById("showLogin");
-
-    if (showSignup) {
-        showSignup.addEventListener("click", function (event) {
-            event.preventDefault();
-            loginSection.style.display = "none";
-            signupSection.style.display = "block";
-        });
+    .nav-links.show {
+        display: flex;
     }
 
-    if (showLogin) {
-        showLogin.addEventListener("click", function (event) {
-            event.preventDefault();
-            signupSection.style.display = "none";
-            loginSection.style.display = "block";
-        });
+    .nav-links a {
+        display: block;
     }
 
-    // Quick Search
-    const homeSearchForm = document.getElementById("homeSearchForm");
-
-    if (homeSearchForm) {
-        homeSearchForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-
-            const location = document.getElementById("homeLocation").value.trim();
-            const budget = document.getElementById("homeBudget").value.trim();
-
-            const params = new URLSearchParams();
-
-            if (location) params.set("location", location);
-            if (budget) params.set("budget", budget);
-
-            window.location.href = "explore.html?" + params.toString();
-        });
+    .hero {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 50px 6%;
     }
 
-    // Login Form
-    const loginForm = document.getElementById("loginForm");
-
-    if (loginForm) {
-        loginForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-            alert("Login feature will be connected to the backend.");
-        });
+    .hero-content h1 {
+        font-size: 38px;
     }
 
-    // Signup Form
-    const signupForm = document.getElementById("signupForm");
-
-    if (signupForm) {
-        signupForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-            alert("Signup feature will be connected to the backend.");
-        });
+    .hero-image {
+        width: 100%;
     }
 
-    // Close Modal with Escape Key
-    document.addEventListener("keydown", function (event) {
-        if (event.key === "Escape") {
-            closeLoginModal();
+    .hero-image img {
+        height: 260px;
+    }
 
-            if (navLinks) {
-                navLinks.classList.remove("show");
-            }
-        }
-    });
+    .search-box,
+    .filter-box {
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-});
+    .search-box .primary-btn {
+        width: 100%;
+    }
+
+    .features-grid,
+    .properties-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-heading h2,
+    .explore-header h1 {
+        font-size: 28px;
+    }
+
+    .why-section,
+    .about-section,
+    .explore-section {
+        padding: 55px 6%;
+    }
+
+    .cta-section h2 {
+        font-size: 25px;
+    }
+
+    .secondary-btn {
+        margin: 12px 0 0;
+    }
+
+    .login-box {
+        padding: 28px 22px;
+    }
+}
