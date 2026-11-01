@@ -1,1 +1,94 @@
 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore PGs | StayNest</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="nav-container">
+        <a href="index.html" class="logo">
+            <i class="fa-solid fa-house"></i> StayNest
+        </a>
+
+        <nav class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="explore.html" class="active">Explore PGs</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="admin-login.html">Admin Login</a>
+        </nav>
+
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+</header>
+
+<main class="explore-page">
+    <section class="explore-heading">
+        <p class="section-label">FIND YOUR SPACE</p>
+        <h1>Explore PG Accommodations</h1>
+        <p>Discover comfortable PG stays near your college or workplace.</p>
+    </section>
+
+    <section class="explore-filters">
+        <div class="filter-group">
+            <label for="locationFilter">Location</label>
+            <input type="text" id="locationFilter" placeholder="Enter location">
+        </div>
+
+        <div class="filter-group">
+            <label for="budgetFilter">Maximum Budget</label>
+            <select id="budgetFilter">
+                <option value="">Any Budget</option>
+                <option value="5000">Up to ₹5,000</option>
+                <option value="7000">Up to ₹7,000</option>
+                <option value="10000">Up to ₹10,000</option>
+                <option value="15000">Up to ₹15,000</option>
+            </select>
+        </div>
+
+        <button type="button" id="filterBtn" class="primary-btn">
+            <i class="fa-solid fa-magnifying-glass"></i> Search
+        </button>
+    </section>
+
+    <section class="explore-listings">
+        <div class="listings-heading">
+            <div>
+                <h2>Available PGs</h2>
+                <p id="listingCount">Loading properties...</p>
+            </div>
+        </div>
+
+        <div class="properties-grid" id="propertiesGrid">
+            <p>Loading PG listings...</p>
+        </div>
+
+        <div id="noProperties" class="no-properties" hidden>
+            <i class="fa-solid fa-house-circle-exclamation"></i>
+            <h3>No PGs found</h3>
+            <p>Try changing your location or budget.</p>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="footer-content">
+        <h2>StayNest</h2>
+        <p>Find a comfortable place to call home.</p>
+        <p>© 2026 StayNest. All rights reserved.</p>
+    </div>
+</footer>
+
+<script src="js/explore.js"></script>
+</body>
+</html>
