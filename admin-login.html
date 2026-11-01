@@ -212,5 +212,70 @@
             }
         });
     </script>
+    <script>
+    const loginForm = document.getElementById("adminLoginForm");
+    const loginButton = document.getElementById("loginBtn");
+    const loginMessage = document.getElementById("loginMessage");
+
+    // Check whether admin is already logged in
+    const existingToken = sessionStorage.getItem("staynestAdminToken");
+
+    if (existingToken) {
+        window.location.replace("admin.html");
+    }
+
+    loginForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const email = document.getElementById("adminEmail").value.trim();
+        const password = document.getElementById("adminPassword").value;
+
+        loginMessage.textContent = "";
+        loginButton.disabled = true;
+        loginButton.textContent = "Checking...";
+
+        try {
+            const response = await fetch(
+                "https://staynest-kl5u.onrender.com/api/admin/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ email, password })
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success || !result.token) {
+                throw new Error(
+                    result.message || "Invalid email or password."
+                );
+            }
+
+            sessionStorage.setItem(
+                "staynestAdminToken",
+                result.token
+            );
+
+            loginMessage.textContent =
+                "Login successful! Opening dashboard...";
+
+            loginMessage.style.color = "green";
+
+            window.location.replace("admin.html");
+
+        } catch (error) {
+            loginMessage.textContent =
+                error.message || "Unable to login.";
+
+            loginMessage.style.color = "#b42318";
+
+            loginButton.disabled = false;
+            loginButton.textContent = "Login";
+        }
+    });
+</script>
 </body>
 </html>
