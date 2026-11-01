@@ -62,6 +62,84 @@ app.get("/", (req, res) => {
     res.send("StayNest Backend is Running!");
 });
 
+// User Signup API
+app.post("/api/auth/signup", async (req, res) => {
+    try {
+        const { name, email, phone, password } = req.body;
+
+        if (!name || !email || !phone || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required."
+            });
+        }
+
+        const cleanName = name.trim();
+        const cleanEmail = email.trim().toLowerCase();
+        const cleanPhone = phone.replace(/\D/g, "");
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+            return res.status(400).json({
+                success: false,
+                message: "Please enter a valid email address."
+            });
+        }
+
+        if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+            return res.status(400).json({
+                success: false,
+                message: "Please enter a valid 10-digit Indian mobile number."
+            });
+        }
+
+        if (password.length < 8) {
+            return res.status(400).json({
+                success: false,
+                message: "Password must contain at least 8 characters."
+            });
+        }
+
+        const { data, error } = await supabase.auth.signUp({
+            email: cleanEmail,
+            password: password,
+            options: {
+                data: {
+                    full_name: cleanName,
+                    phone: cleanPhone
+                }
+            }
+        });
+
+        if (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            });
+        }
+
+        res.status(201).json({
+            success: true,
+            message: data.session
+                ? "Account created successfully!"
+                : "Account created. Please check your email for confirmation.",
+            user: {
+                id: data.user.id,
+                name: cleanName,
+                email: data.user.email,
+                phone: cleanPhone
+            },
+            requiresEmailConfirmation: !data.session
+        });
+
+    } catch (error) {
+        console.error("Signup error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Could not create account. Please try again."
+        });
+    }
+});
 // Admin Login API
 app.post("/api/admin/login", async (req, res) => {
     try {
