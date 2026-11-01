@@ -1,22 +1,22 @@
 
 require("dotenv").config();
 
-const bcrypt = require("bcryptjs");
 const express = require("express");
 const cors = require("cors");
-const db = require("./database");
+const bcrypt = require("bcryptjs");
 const { Resend } = require("resend");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const app = express();
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.PORT || 5000;
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Helper: Safely display text inside email HTML
+let supabase;
+
+// Escape special characters before adding user data to email HTML
 function escapeHTML(value) {
     return String(value || "").replace(/[&<>"']/g, (char) => {
         const entities = {
@@ -26,8 +26,35 @@ function escapeHTML(value) {
             '"': "&quot;",
             "'": "&#39;"
         };
+
         return entities[char];
     });
+}
+
+// Connect to Supabase
+async function connectDatabase() {
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SECRET_KEY) {
+        throw new Error("Supabase environment variables are missing.");
+    }
+
+    if (!process.env.RESEND_API_KEY) {
+        throw new Error("Resend API key is missing.");
+    }
+
+    const { createClient } = await import("@supabase/supabase-js");
+
+    supabase = createClient(
+        process.env.SUPABASE_URL,
+        process.env.SUPABASE_SECRET_KEY,
+        {
+            auth: {
+                persistSession: false,
+                autoRefreshToken: false
+            }
+        }
+    );
+
+    console.log("StayNest database connected successfully!");
 }
 
 // Home route
@@ -36,33 +63,47 @@ app.get("/", (req, res) => {
 });
 
 // Admin Login API
-app.post("/api/admin/login", (req, res) => {
-    console.log("ADMIN LOGIN API HIT");
+app.post("/api/admin/login", async (req, res) => {
+    try {
+        const { email, password } = req.body;
 
-    const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required."
+            });
+        }
 
-    if (!email || !password) {
-        return res.status(400).json({
+        const { data: admin, error } = await supabase
+            .from("admins")
+            .select("*")
+            .eq("email", email)
+            .maybeSingle();
+
+        if (error) {
+            throw error;
+        }
+
+        if (!admin || !bcrypt.compareSync(password, admin.password_hash)) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password."
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Login successful!"
+        });
+
+    } catch (error) {
+        console.error("Admin login error:", error);
+
+        res.status(500).json({
             success: false,
-            message: "Email and password are required."
+            message: "Could not complete admin login."
         });
     }
-
-    const admin = db.prepare(
-        "SELECT * FROM admins WHERE email = ?"
-    ).get(email);
-
-    if (!admin || !bcrypt.compareSync(password, admin.password_hash)) {
-        return res.status(401).json({
-            success: false,
-            message: "Invalid email or password."
-        });
-    }
-
-    res.json({
-        success: true,
-        message: "Login successful!"
-    });
 });
 
 // PG data
@@ -95,8 +136,8 @@ app.get("/api/pgs", (req, res) => {
     res.json(pgData);
 });
 
-// Enquiry API
-app.post("/api/enquiries", (req, res) => {
+// Submit Enquiry
+app.post("/api/enquiries", async (req, res) => {
     try {
         const { name, email, phone, message } = req.body;
 
@@ -107,19 +148,30 @@ app.post("/api/enquiries", (req, res) => {
             });
         }
 
-        const insertEnquiry = db.prepare(`
-            INSERT INTO enquiries (name, email, phone, message)
-            VALUES (?, ?, ?, ?)
-        `);
+        const { data, error } = await supabase
+            .from("enquiries")
+            .insert([{
+                name,
+                email,
+                phone: phone || "",
+                message,
+                status: "Pending"
+            }])
+            .select()
+            .single();
 
-        insertEnquiry.run(name, email, phone || "", message);
+        if (error) {
+            throw error;
+        }
 
-        console.log("New Enquiry Saved to Database:", name);
+        console.log("New enquiry saved:", name);
 
         res.json({
             success: true,
-            message: "Enquiry submitted successfully!"
+            message: "Enquiry submitted successfully!",
+            enquiry: data
         });
+
     } catch (error) {
         console.error("Enquiry error:", error);
 
@@ -130,8 +182,8 @@ app.post("/api/enquiries", (req, res) => {
     }
 });
 
-// Visit Request API
-app.post("/api/visits", (req, res) => {
+// Submit Visit Request
+app.post("/api/visits", async (req, res) => {
     try {
         const { name, phone, email, date, time, message } = req.body;
 
@@ -142,20 +194,32 @@ app.post("/api/visits", (req, res) => {
             });
         }
 
-        const insertVisit = db.prepare(`
-            INSERT INTO visits
-                (name, phone, email, date, time, message)
-            VALUES (?, ?, ?, ?, ?, ?)
-        `);
+        const { data, error } = await supabase
+            .from("visits")
+            .insert([{
+                name,
+                phone,
+                email,
+                date: date || null,
+                time: time || null,
+                message: message || "",
+                status: "Pending"
+            }])
+            .select()
+            .single();
 
-        insertVisit.run(name, phone, email, date, time, message);
+        if (error) {
+            throw error;
+        }
 
-        console.log("New Visit Request Saved:", name, email);
+        console.log("New visit request saved:", name);
 
         res.json({
             success: true,
-            message: "Visit request submitted successfully!"
+            message: "Visit request submitted successfully!",
+            visit: data
         });
+
     } catch (error) {
         console.error("Visit request error:", error);
 
@@ -166,23 +230,30 @@ app.post("/api/visits", (req, res) => {
     }
 });
 
-// Admin - Get Enquiries
-app.get("/api/enquiries", (req, res) => {
+// Get All Enquiries
+app.get("/api/enquiries", async (req, res) => {
     try {
-        const enquiries = db.prepare(
-            "SELECT * FROM enquiries ORDER BY id DESC"
-        ).all();
+        const { data, error } = await supabase
+            .from("enquiries")
+            .select("*")
+            .order("id", { ascending: false });
 
-        res.json(enquiries);
+        if (error) {
+            throw error;
+        }
+
+        res.json(data);
+
     } catch (error) {
         console.error("Get enquiries error:", error);
+
         res.status(500).json({
             message: "Could not load enquiries."
         });
     }
 });
 
-// Admin - Send Custom Reply Email
+// Send Reply Email
 app.post("/api/enquiries/:id/reply", async (req, res) => {
     const { id } = req.params;
     const { reply } = req.body;
@@ -195,9 +266,15 @@ app.post("/api/enquiries/:id/reply", async (req, res) => {
     }
 
     try {
-        const enquiry = db.prepare(
-            "SELECT * FROM enquiries WHERE id = ?"
-        ).get(id);
+        const { data: enquiry, error: fetchError } = await supabase
+            .from("enquiries")
+            .select("*")
+            .eq("id", id)
+            .maybeSingle();
+
+        if (fetchError) {
+            throw fetchError;
+        }
 
         if (!enquiry) {
             return res.status(404).json({
@@ -247,14 +324,20 @@ app.post("/api/enquiries/:id/reply", async (req, res) => {
             });
         }
 
-        // Save reply only after successful email sending
-        db.prepare(`
-            UPDATE enquiries
-            SET reply = ?, replied_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-        `).run(cleanReply, id);
+        // Save the reply after the email is sent
+        const { error: updateError } = await supabase
+            .from("enquiries")
+            .update({
+                reply: cleanReply,
+                replied_at: new Date().toISOString()
+            })
+            .eq("id", id);
 
-        console.log("Enquiry reply email sent. Enquiry ID:", id);
+        if (updateError) {
+            throw updateError;
+        }
+
+        console.log("Reply email sent. Enquiry ID:", id);
 
         res.json({
             success: true,
@@ -272,8 +355,8 @@ app.post("/api/enquiries/:id/reply", async (req, res) => {
     }
 });
 
-// Admin - Mark Enquiry as Resolved or Pending
-app.patch("/api/enquiries/:id/status", (req, res) => {
+// Update Enquiry Status
+app.patch("/api/enquiries/:id/status", async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
@@ -287,9 +370,15 @@ app.patch("/api/enquiries/:id/status", (req, res) => {
     }
 
     try {
-        const enquiry = db.prepare(
-            "SELECT * FROM enquiries WHERE id = ?"
-        ).get(id);
+        const { data: enquiry, error: fetchError } = await supabase
+            .from("enquiries")
+            .select("id")
+            .eq("id", id)
+            .maybeSingle();
+
+        if (fetchError) {
+            throw fetchError;
+        }
 
         if (!enquiry) {
             return res.status(404).json({
@@ -298,15 +387,19 @@ app.patch("/api/enquiries/:id/status", (req, res) => {
             });
         }
 
-        db.prepare(`
-            UPDATE enquiries
-            SET status = ?,
-                resolved_at = CASE
-                    WHEN ? = 'Resolved' THEN CURRENT_TIMESTAMP
-                    ELSE NULL
-                END
-            WHERE id = ?
-        `).run(status, status, id);
+        const { error } = await supabase
+            .from("enquiries")
+            .update({
+                status,
+                resolved_at: status === "Resolved"
+                    ? new Date().toISOString()
+                    : null
+            })
+            .eq("id", id);
+
+        if (error) {
+            throw error;
+        }
 
         console.log(`Enquiry ${id} status updated to ${status}`);
 
@@ -327,23 +420,30 @@ app.patch("/api/enquiries/:id/status", (req, res) => {
     }
 });
 
-// Admin - Get Visit Requests
-app.get("/api/visits", (req, res) => {
+// Get All Visit Requests
+app.get("/api/visits", async (req, res) => {
     try {
-        const visits = db.prepare(
-            "SELECT * FROM visits ORDER BY id DESC"
-        ).all();
+        const { data, error } = await supabase
+            .from("visits")
+            .select("*")
+            .order("id", { ascending: false });
 
-        res.json(visits);
+        if (error) {
+            throw error;
+        }
+
+        res.json(data);
+
     } catch (error) {
         console.error("Get visits error:", error);
+
         res.status(500).json({
             message: "Could not load visit requests."
         });
     }
 });
 
-// Admin - Update Visit Request Status and Send Email
+// Update Visit Status and Send Email
 app.patch("/api/visits/:id/status", async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
@@ -358,9 +458,15 @@ app.patch("/api/visits/:id/status", async (req, res) => {
     }
 
     try {
-        const visit = db.prepare(
-            "SELECT * FROM visits WHERE id = ?"
-        ).get(id);
+        const { data: visit, error: fetchError } = await supabase
+            .from("visits")
+            .select("*")
+            .eq("id", id)
+            .maybeSingle();
+
+        if (fetchError) {
+            throw fetchError;
+        }
 
         if (!visit) {
             return res.status(404).json({
@@ -369,9 +475,14 @@ app.patch("/api/visits/:id/status", async (req, res) => {
             });
         }
 
-        db.prepare(
-            "UPDATE visits SET status = ? WHERE id = ?"
-        ).run(status, id);
+        const { error: updateError } = await supabase
+            .from("visits")
+            .update({ status })
+            .eq("id", id);
+
+        if (updateError) {
+            throw updateError;
+        }
 
         if (!visit.email) {
             return res.json({
@@ -379,7 +490,7 @@ app.patch("/api/visits/:id/status", async (req, res) => {
                 id: Number(id),
                 status,
                 emailSent: false,
-                message: `Status updated to ${status}, but no email address is saved for this request.`
+                message: `Status updated to ${status}, but no email address is saved.`
             });
         }
 
@@ -389,15 +500,20 @@ app.patch("/api/visits/:id/status", async (req, res) => {
                 to: [visit.email],
                 subject: `StayNest Visit Request ${status}`,
                 html: `
-                    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #344650;">
                         <h2>Hello ${escapeHTML(visit.name || "there")},</h2>
+
                         <p>Your StayNest PG visit request has been
                             <strong>${status}</strong>.</p>
+
                         <p><strong>Visit date:</strong>
                             ${escapeHTML(visit.date || "Not specified")}</p>
+
                         <p><strong>Visit time:</strong>
                             ${escapeHTML(visit.time || "Not specified")}</p>
+
                         <p>Thank you for choosing StayNest!</p>
+                        <p>Regards,<br><strong>StayNest Team</strong></p>
                     </div>
                 `
             });
@@ -410,13 +526,13 @@ app.patch("/api/visits/:id/status", async (req, res) => {
                     id: Number(id),
                     status,
                     emailSent: false,
-                    message: `Status updated to ${status}, but email could not be sent. Check the backend terminal.`
+                    message: `Status updated to ${status}, but email could not be sent.`
                 });
             }
 
-            console.log("Status email sent. Visit ID:", id);
+            console.log("Visit status email sent. Visit ID:", id);
 
-            return res.json({
+            res.json({
                 success: true,
                 id: Number(id),
                 status,
@@ -427,17 +543,17 @@ app.patch("/api/visits/:id/status", async (req, res) => {
         } catch (emailError) {
             console.error("Email sending failed:", emailError);
 
-            return res.json({
+            res.json({
                 success: true,
                 id: Number(id),
                 status,
                 emailSent: false,
-                message: `Status updated to ${status}, but email could not be sent. Check the backend terminal.`
+                message: `Status updated to ${status}, but email could not be sent.`
             });
         }
 
     } catch (error) {
-        console.error("Status update error:", error);
+        console.error("Visit status error:", error);
 
         res.status(500).json({
             success: false,
@@ -446,17 +562,19 @@ app.patch("/api/visits/:id/status", async (req, res) => {
     }
 });
 
-// Start server
-app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on port ${PORT}`);
-});
+// Start the server after connecting to Supabase
+async function startServer() {
+    try {
+        await connectDatabase();
 
+        app.listen(PORT, "0.0.0.0", () => {
+            console.log(`Server running on port ${PORT}`);
+        });
 
-  
-        
+    } catch (error) {
+        console.error("Server could not start:", error.message);
+        process.exit(1);
+    }
+}
 
-  
-
-        
-                    
-              
+startServer();
