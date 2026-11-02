@@ -1410,3 +1410,20 @@ footer {
         padding: 22px;
     }
 }
+/* Navbar buttons */
+.nav-actions .login-btn,
+.nav-actions .signup-btn,
+.nav-actions .admin-login-btn,
+#loginBtn {
+    background-color: #344650;
+    color: #ffffff;
+    border: 1px solid #344650;
+}
+
+.nav-actions .login-btn:hover,
+.nav-actions .signup-btn:hover,
+.nav-actions .admin-login-btn:hover,
+#loginBtn:hover {
+    background-color: #263942;
+    color: #ffffff;
+}
