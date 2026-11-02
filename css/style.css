@@ -1559,3 +1559,15 @@ footer {
     color: #ffffff;
     border-color: #218838;
 }
+#loginBtn,
+#mobileLoginBtn {
+    background: #28a745 !important;
+    color: #ffffff !important;
+    border: 1px solid #28a745 !important;
+}
+
+#loginBtn:hover,
+#mobileLoginBtn:hover {
+    background: #218838 !important;
+    border-color: #218838 !important;
+}
