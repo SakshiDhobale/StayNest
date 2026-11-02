@@ -122,7 +122,16 @@ button {
     transition: 0.3s;
 }
 
-.nav-actions .login-btn,
+.nav-actions .login-btn {
+    background: var(--white);
+    color: var(--primary);
+    border: 1px solid var(--border);
+}
+
+.nav-actions .login-btn:hover {
+    background: var(--light);
+}
+
 .nav-actions .signup-btn,
 .nav-actions .admin-login-btn {
     background: var(--primary);
@@ -130,7 +139,6 @@ button {
     border: 1px solid var(--primary);
 }
 
-.nav-actions .login-btn:hover,
 .nav-actions .signup-btn:hover,
 .nav-actions .admin-login-btn:hover {
     background: var(--primary-dark);
@@ -932,7 +940,7 @@ footer {
     background: var(--primary-dark);
 }
 
-/* Visit and Enquiry Forms */
+/* Forms */
 
 .visit-content,
 .enquiry-content {
@@ -1409,50 +1417,4 @@ footer {
     .enquiry-content {
         padding: 22px;
     }
-}
-/* Navbar */
-
-.navbar {
-    width: 100%;
-    height: 91px;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
-}
-
-.nav-container {
-    width: calc(100% - 48px);
-    max-width: 1422px;
-    height: 100%;
-    margin: auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 25px;
-}
-
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 32px;
-}
-
-.nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.nav-actions button,
-.nav-actions a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    transition: 0.3s;
 }
