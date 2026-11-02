@@ -354,8 +354,27 @@ const pgData = [
 ];
 
 // PG API
-app.get("/api/pgs", (req, res) => {
-    res.json(pgData);
+app.get("/api/pgs", async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from("pgs")
+            .select("*")
+            .order("id", { ascending: false });
+
+        if (error) {
+            throw error;
+        }
+
+        res.json([...pgData, ...(data || [])]);
+
+    } catch (error) {
+        console.error("Load PGs error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Could not load PG listings."
+        });
+    }
 });
 
 // Submit Enquiry
