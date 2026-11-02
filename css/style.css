@@ -128,36 +128,22 @@ button {
     transition: 0.25s ease;
 }
 
-.login-btn {
-    color: var(--white);
-    background: var(--primary);
-    border: 1px solid var(--primary);
-}
+/* All Navbar Buttons - Dark Slate */
 
-.login-btn:hover {
-    background: #253740;
-}
-
-.signup-btn {
-    color: var(--primary);
-    background: var(--white);
-    border: 1px solid var(--primary);
-}
-
-.signup-btn:hover {
-    color: var(--white);
-    background: var(--primary);
-}
-
+.login-btn,
+.signup-btn,
 .admin-login-btn {
-    color: var(--primary);
-    background: var(--cream);
+    color: var(--white);
+    background: var(--primary);
     border: 1px solid var(--primary);
 }
 
+.login-btn:hover,
+.signup-btn:hover,
 .admin-login-btn:hover {
     color: var(--white);
-    background: var(--primary);
+    background: #253740;
+    border-color: #253740;
 }
 
 .menu-toggle {
