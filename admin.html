@@ -264,6 +264,62 @@
                 text-align: center;
             }
         }
+   [hidden] {
+    display: none !important;
+}
+
+#addPgForm {
+    display: grid;
+    gap: 12px;
+    max-width: 700px;
+}
+
+#addPgForm label {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#addPgForm input,
+#addPgForm select,
+#addPgForm textarea {
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #d9d9d5;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #344650;
+    font: inherit;
+    font-size: 16px;
+}
+
+#addPgForm textarea {
+    resize: vertical;
+}
+
+#addPgForm input:focus,
+#addPgForm select:focus,
+#addPgForm textarea:focus {
+    outline: 2px solid #344650;
+    outline-offset: 2px;
+}
+
+#savePgBtn {
+    margin-top: 12px;
+    justify-self: start;
+}
+
+#savePgBtn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+#addPgMessage {
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
     </style>
 </head>
 
@@ -284,6 +340,21 @@
             </div>
 
             <div class="top-actions">
+                <button
+    type="button"
+    class="back-btn"
+    id="showAddPgBtn"
+>
+    + Add PG / Rooms
+</button>
+
+<button
+    type="button"
+    class="refresh-btn"
+    id="adminLogoutBtn"
+>
+    Logout
+</button>
                 <button class="refresh-btn" id="refreshBtn">
                     ↻ Refresh
                 </button>
@@ -294,6 +365,97 @@
             </div>
         </div>
 
+       <div class="section" id="addPgSection" hidden>
+
+    <div class="section-header">
+        <div>
+            <h2>Add PG Listing</h2>
+            <p class="section-label">
+                Enter the property information shown to users.
+            </p>
+        </div>
+    </div>
+
+    <form id="addPgForm">
+
+        <label for="pgName">PG Name</label>
+        <input
+            type="text"
+            id="pgName"
+            name="name"
+            maxlength="150"
+            required
+        >
+
+        <label for="pgLocation">Location</label>
+        <input
+            type="text"
+            id="pgLocation"
+            name="location"
+            placeholder="Area, City"
+            maxlength="300"
+            required
+        >
+
+        <label for="pgPrice">Monthly Rent (₹)</label>
+        <input
+            type="number"
+            id="pgPrice"
+            name="price"
+            min="0.01"
+            max="99999999.99"
+            step="0.01"
+            required
+        >
+
+        <label for="pgSuitable">Suitable For</label>
+        <select id="pgSuitable" name="suitable_for">
+            <option value="">Select residents</option>
+            <option value="Girl students and working women">
+                Girl students and working women
+            </option>
+            <option value="Boy students and working men">
+                Boy students and working men
+            </option>
+            <option value="Students and working professionals">
+                Students and working professionals
+            </option>
+        </select>
+
+        <label for="pgDescription">Description</label>
+        <textarea
+            id="pgDescription"
+            name="description"
+            rows="4"
+            maxlength="3000"
+        ></textarea>
+
+        <label for="pgImage">Image URL or Path</label>
+        <input
+            type="text"
+            id="pgImage"
+            name="image"
+            placeholder="images/pg1.jpg or https://..."
+            maxlength="2000"
+        >
+
+        <label for="pgFacilities">Facilities</label>
+        <input
+            type="text"
+            id="pgFacilities"
+            name="facilities"
+            placeholder="Wi-Fi, Meals, Furnished"
+        >
+
+        <button type="submit" class="back-btn" id="savePgBtn">
+            Save PG
+        </button>
+
+        <p id="addPgMessage" role="status" aria-live="polite"></p>
+
+    </form>
+
+</div>
         <!-- Summary Cards -->
         <div class="summary">
             <div class="summary-card">
@@ -802,6 +964,127 @@ window.fetch = function (url, options = {}) {
         // Initial Dashboard Load
         loadDashboard();
 
+  // Add PG form
+const addPgSection = document.getElementById("addPgSection");
+const addPgForm = document.getElementById("addPgForm");
+const showAddPgBtn = document.getElementById("showAddPgBtn");
+const savePgBtn = document.getElementById("savePgBtn");
+const addPgMessage = document.getElementById("addPgMessage");
+
+let savingPg = false;
+
+showAddPgBtn.setAttribute("aria-controls", "addPgSection");
+showAddPgBtn.setAttribute("aria-expanded", "false");
+
+// Open or close form
+showAddPgBtn.addEventListener("click", function () {
+    addPgSection.hidden = !addPgSection.hidden;
+
+    showAddPgBtn.setAttribute(
+        "aria-expanded",
+        String(!addPgSection.hidden)
+    );
+
+    if (!addPgSection.hidden) {
+        document.getElementById("pgName").focus();
+    }
+});
+
+// Save PG
+addPgForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    if (savingPg || !addPgForm.reportValidity()) {
+        return;
+    }
+
+    const values = new FormData(addPgForm);
+
+    const pg = {
+        name: String(values.get("name") || "").trim(),
+        location: String(values.get("location") || "").trim(),
+        price: Number(values.get("price")),
+        suitable_for: String(values.get("suitable_for") || "").trim(),
+        description: String(values.get("description") || "").trim(),
+        image: String(values.get("image") || "").trim(),
+        facilities: String(values.get("facilities") || "")
+            .split(",")
+            .map(function (item) {
+                return item.trim();
+            })
+            .filter(Boolean)
+    };
+
+    addPgMessage.textContent = "";
+    addPgMessage.style.color = "#b42318";
+
+    if (!pg.name || !pg.location) {
+        addPgMessage.textContent =
+            "Please enter the PG name and location.";
+        return;
+    }
+
+    savingPg = true;
+    savePgBtn.disabled = true;
+    savePgBtn.textContent = "Saving...";
+    addPgForm.setAttribute("aria-busy", "true");
+
+    try {
+        const response = await fetch(`${API_URL}/api/pgs`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${adminToken}`
+            },
+            body: JSON.stringify(pg)
+        });
+
+        if (response.status === 401) {
+            return;
+        }
+
+        let result;
+
+        try {
+            result = await response.json();
+        } catch {
+            throw new Error(
+                "Unexpected server response. Check the Properties page before trying again."
+            );
+        }
+
+        if (!response.ok || !result.success) {
+            throw new Error(
+                result.message || "Could not save PG."
+            );
+        }
+
+        addPgForm.reset();
+
+        addPgMessage.textContent =
+            "PG added successfully! Open the Properties page to view it.";
+
+        addPgMessage.style.color = "#218838";
+
+    } catch (error) {
+        addPgMessage.textContent = error instanceof TypeError
+            ? "Connection interrupted. Check the Properties page before submitting again."
+            : error.message;
+
+    } finally {
+        savingPg = false;
+        savePgBtn.disabled = false;
+        savePgBtn.textContent = "Save PG";
+        addPgForm.removeAttribute("aria-busy");
+    }
+});
+
+// Admin logout
+document.getElementById("adminLogoutBtn")
+    .addEventListener("click", function () {
+        sessionStorage.removeItem("staynestAdminToken");
+        window.location.replace("admin-login.html");
+    });
     </script>
 </body>
 </html>
