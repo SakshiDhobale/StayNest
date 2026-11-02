@@ -463,10 +463,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 <div class="sn-rooms" id="snRooms" hidden></div>
 
-                <p class="sn-note">
-                    Sample listing. Confirm eligibility, rent, facilities
-                    and room availability before deciding.
-                </p>
+                
             </div>
         </div>
 
