@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,13 +9,12 @@
 
     <link rel="stylesheet" href="css/style.css">
 
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    >
 
+    <style>
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -23,259 +23,305 @@
 
         .admin-login-page {
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 24px;
             background: #f7f7f5;
         }
 
         .admin-login-box {
             width: 100%;
-            max-width: 410px;
+            max-width: 420px;
             padding: 35px;
-            background: #fff;
+            background: #ffffff;
             border: 1px solid #d9d9d5;
-            border-radius: 12px;
+            border-radius: 14px;
+            box-shadow: 0 14px 35px rgba(52, 70, 80, 0.08);
         }
 
-        .logo {
-            display: block;
-            margin-bottom: 25px;
+        .admin-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 28px;
             color: #344650;
-            font-size: 23px;
-            font-weight: bold;
+            font-size: 25px;
+            font-weight: 700;
             text-decoration: none;
         }
 
-        .admin-login-box h2 {
+        .admin-login-box h1 {
             margin: 0 0 10px;
             font-size: 26px;
+            line-height: 1.3;
         }
 
-        .subtitle {
+        .admin-subtitle {
             margin-bottom: 25px;
             color: #626b6f;
-            line-height: 1.5;
+            font-size: 14px;
+            line-height: 1.7;
         }
 
         .admin-login-box label {
             display: block;
             margin: 16px 0 7px;
+            font-size: 14px;
             font-weight: 600;
         }
 
         .admin-login-box input {
             width: 100%;
-            padding: 12px;
+            padding: 13px;
             border: 1px solid #d9d9d5;
-            border-radius: 6px;
-            font-size: 15px;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #344650;
+            font-size: 16px;
         }
 
         .admin-login-box input:focus {
             outline: 2px solid #aab7bc;
+            outline-offset: 2px;
             border-color: #344650;
         }
 
-        .admin-login-box button {
+        .admin-submit-btn {
             width: 100%;
             margin-top: 24px;
             padding: 13px;
-            border: none;
-            border-radius: 6px;
+            border: 1px solid #344650;
+            border-radius: 8px;
             background: #344650;
-            color: white;
-            font-size: 16px;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
         }
 
-        .admin-login-box button:disabled {
+        .admin-submit-btn:hover {
+            background: #253740;
+        }
+
+        .admin-submit-btn:disabled {
             opacity: 0.7;
             cursor: wait;
         }
 
         #loginMessage {
-            margin: 16px 0 0;
+            margin-top: 16px;
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.6;
             overflow-wrap: anywhere;
+        }
+
+        #loginMessage:empty {
+            display: none;
         }
 
         .back-home {
             display: block;
-            margin-top: 20px;
-            text-align: center;
+            margin-top: 24px;
             color: #344650;
+            font-size: 14px;
+            text-align: center;
             text-decoration: none;
         }
 
         .back-home:hover {
             text-decoration: underline;
         }
+
+        @media (max-width: 480px) {
+            .admin-login-page {
+                padding: 18px;
+            }
+
+            .admin-login-box {
+                padding: 28px 22px;
+            }
+        }
     </style>
 </head>
 
 <body>
+
     <main class="admin-login-page">
-        <section class="admin-login-box">
-            <a href="index.html" class="logo">
-                <i class="fa-solid fa-house"></i>
+
+        <section class="admin-login-box" aria-labelledby="adminLoginTitle">
+
+            <a href="index.html" class="admin-logo">
+                <i class="fa-solid fa-house" aria-hidden="true"></i>
                 <span>StayNest</span>
             </a>
 
-            <h2>Admin Login</h2>
+            <h1 id="adminLoginTitle">Admin Login</h1>
 
-            <p class="subtitle">
+            <p class="admin-subtitle">
                 Login to manage StayNest enquiries and visit requests.
             </p>
 
             <form id="adminLoginForm">
+
                 <label for="adminEmail">Email Address</label>
+
                 <input
                     type="email"
                     id="adminEmail"
+                    name="email"
                     placeholder="Enter admin email"
                     autocomplete="username"
                     required
                 >
 
                 <label for="adminPassword">Password</label>
+
                 <input
                     type="password"
                     id="adminPassword"
+                    name="password"
                     placeholder="Enter password"
                     autocomplete="current-password"
                     required
                 >
 
-                <button type="submit" id="loginBtn">Login</button>
+                <button
+                    type="submit"
+                    class="admin-submit-btn"
+                    id="adminLoginBtn"
+                >
+                    Login
+                </button>
+
             </form>
 
-            <p id="loginMessage" role="status" aria-live="polite"></p>
+            <p
+                id="loginMessage"
+                role="status"
+                aria-live="polite"
+            ></p>
 
             <a href="index.html" class="back-home">
-                ← Back to Home
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                Back to Home
             </a>
+
         </section>
+
     </main>
 
     <script>
+        // Login elements
+        const API_URL = "https://staynest-kl5u.onrender.com";
+
         const loginForm = document.getElementById("adminLoginForm");
-        const loginButton = document.getElementById("loginBtn");
+        const loginButton = document.getElementById("adminLoginBtn");
         const loginMessage = document.getElementById("loginMessage");
 
+        let isSubmitting = false;
+
+        // Show message
+        function showLoginMessage(message, success = false) {
+            loginMessage.textContent = message;
+            loginMessage.style.color = success ? "#218838" : "#b42318";
+        }
+
+        // Admin login
         loginForm.addEventListener("submit", async function (event) {
             event.preventDefault();
+
+            if (isSubmitting || !loginForm.reportValidity()) {
+                return;
+            }
 
             const email = document.getElementById("adminEmail").value.trim();
             const password = document.getElementById("adminPassword").value;
 
-            loginMessage.textContent = "";
+            isSubmitting = true;
             loginButton.disabled = true;
             loginButton.textContent = "Checking...";
+            loginForm.setAttribute("aria-busy", "true");
+
+            showLoginMessage("");
 
             try {
                 const response = await fetch(
-                    "https://staynest-kl5u.onrender.com/api/admin/login",
+                    `${API_URL}/api/admin/login`,
                     {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
                         },
-                        body: JSON.stringify({ email, password })
+                        body: JSON.stringify({
+                            email,
+                            password
+                        })
                     }
                 );
 
-                const result = await response.json();
+                let result;
 
-                if (response.ok && result.success) {
-                    loginMessage.textContent = "Login successful! Opening dashboard...";
-                    loginMessage.style.color = "green";
-
-                    setTimeout(function () {
-                        window.location.href = "admin.html";
-                    }, 700);
-                } else {
-                    loginMessage.textContent =
-                        result.message || "Invalid email or password.";
-                    loginMessage.style.color = "#b42318";
-                    loginButton.disabled = false;
-                    loginButton.textContent = "Login";
+                try {
+                    result = await response.json();
+                } catch {
+                    throw new Error(
+                        "Server returned an unexpected response. Please try again."
+                    );
                 }
+
+                if (!response.ok || !result?.success) {
+                    throw new Error(
+                        result?.message || "Invalid email or password."
+                    );
+                }
+
+                if (
+                    typeof result.token !== "string" ||
+                    !result.token.trim()
+                ) {
+                    throw new Error(
+                        "Admin token was not received. The backend login route needs to be checked."
+                    );
+                }
+
+                try {
+                    sessionStorage.setItem(
+                        "staynestAdminToken",
+                        result.token
+                    );
+                } catch {
+                    throw new Error(
+                        "Unable to save login. Please allow browser storage."
+                    );
+                }
+
+                loginForm.reset();
+
+                showLoginMessage(
+                    "Login successful! Opening dashboard...",
+                    true
+                );
+
+                window.location.replace("admin.html");
+
             } catch (error) {
-                loginMessage.textContent ="Error:" + error.message;
-                    
-                loginMessage.style.color = "#b42318";
+                showLoginMessage(
+                    error instanceof TypeError
+                        ? "Unable to connect to the server. Please try again."
+                        : error.message || "Unable to login."
+                );
+
+                isSubmitting = false;
                 loginButton.disabled = false;
                 loginButton.textContent = "Login";
+
+            } finally {
+                loginForm.removeAttribute("aria-busy");
             }
         });
     </script>
-    <script>
-    const loginForm = document.getElementById("adminLoginForm");
-    const loginButton = document.getElementById("loginBtn");
-    const loginMessage = document.getElementById("loginMessage");
 
-    // Check whether admin is already logged in
-    const existingToken = sessionStorage.getItem("staynestAdminToken");
-
-    if (existingToken) {
-        window.location.replace("admin.html");
-    }
-
-    loginForm.addEventListener("submit", async function (event) {
-        event.preventDefault();
-
-        const email = document.getElementById("adminEmail").value.trim();
-        const password = document.getElementById("adminPassword").value;
-
-        loginMessage.textContent = "";
-        loginButton.disabled = true;
-        loginButton.textContent = "Checking...";
-
-        try {
-            const response = await fetch(
-                "https://staynest-kl5u.onrender.com/api/admin/login",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ email, password })
-                }
-            );
-
-            const result = await response.json();
-
-            if (!response.ok || !result.success || !result.token) {
-                throw new Error(
-                    result.message || "Invalid email or password."
-                );
-            }
-
-            sessionStorage.setItem(
-                "staynestAdminToken",
-                result.token
-            );
-
-            loginMessage.textContent =
-                "Login successful! Opening dashboard...";
-
-            loginMessage.style.color = "green";
-
-            window.location.replace("admin.html");
-
-        } catch (error) {
-            loginMessage.textContent =
-                error.message || "Unable to login.";
-
-            loginMessage.style.color = "#b42318";
-
-            loginButton.disabled = false;
-            loginButton.textContent = "Login";
-        }
-    });
-</script>
 </body>
 </html>
