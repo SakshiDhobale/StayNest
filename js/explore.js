@@ -34,7 +34,27 @@ document.addEventListener("DOMContentLoaded", function () {
         "Urban Nest PG": "images/pg3.jpg"
     };
 
-    // Popup styling
+    // Sample PG information
+const pgInformation = {
+    "StayWell Residency": {
+        suitableFor: "Girl students and working women",
+        description:
+            "A comfortable PG option in Lokmanya Nagar, Nagpur, for girl students and working women. Wi-Fi, meals and furnished accommodation make it convenient for everyday study and work routines."
+    },
+
+    "Sai Krupa PG": {
+        suitableFor: "Girl students and working women",
+        description:
+            "Located in Vasudev Nagar, Nagpur, this PG is suitable for girl students and working women. The sample listing includes Wi-Fi, laundry and security facilities for a convenient stay."
+    },
+
+    "Urban Nest PG": {
+        suitableFor: "Boy students and working men",
+        description:
+            "A PG option on Hingna Road, Nagpur, for boy students and working men. Furnished accommodation, Wi-Fi and AC are included in the sample listing. Confirm room availability and charges before choosing a room."
+    }
+};
+// Popup styling
     const popupStyle = document.createElement("style");
 
     popupStyle.textContent = `
@@ -418,6 +438,26 @@ document.addEventListener("DOMContentLoaded", function () {
             <p id="explorePopupLocation"></p>
 
             <p id="explorePopupPrice"></p>
+            // Sample PG information
+const pgInformation = {
+    "StayWell Residency": {
+        suitableFor: "Girl students and working women",
+        description:
+            "A comfortable PG option in Lokmanya Nagar, Nagpur, for girl students and working women. Wi-Fi, meals and furnished accommodation make it convenient for everyday study and work routines."
+    },
+
+    "Sai Krupa PG": {
+        suitableFor: "Girl students and working women",
+        description:
+            "Located in Vasudev Nagar, Nagpur, this PG is suitable for girl students and working women. The sample listing includes Wi-Fi, laundry and security facilities for a convenient stay."
+    },
+
+    "Urban Nest PG": {
+        suitableFor: "Boy students and working men",
+        description:
+            "A PG option on Hingna Road, Nagpur, for boy students and working men. Furnished accommodation, Wi-Fi and AC are included in the sample listing. Confirm room availability and charges before choosing a room."
+    }
+};
 
             <div
                 class="property-features"
@@ -658,6 +698,19 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         selectedProperty = pg;
+        const information = pgInformation[pg.name || pg.title];
+
+propertyDialog.querySelector(
+    "#explorePopupSuitable"
+).textContent = information
+    ? `Suitable for: ${information.suitableFor}`
+    : "";
+
+propertyDialog.querySelector(
+    "#explorePopupDescription"
+).textContent = information
+    ? information.description
+    : String(pg.description || "");
         popupOpener = opener;
 
         requestForm.reset();
