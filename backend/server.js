@@ -1,11 +1,10 @@
-
 require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
-const { Resend } = require("resend");
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -13,7 +12,69 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Send email using Brevo
+async function sendEmail({ to, subject, html }) {
+    try {
+        const response = await fetch(
+            "https://api.brevo.com/v3/smtp/email",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "api-key": process.env.BREVO_API_KEY
+                },
+                body: JSON.stringify({
+                    sender: {
+                        name: "StayNest",
+                        email: process.env.BREVO_SENDER_EMAIL
+                    },
+                    to: to.map(function (email) {
+                        return { email };
+                    }),
+                    replyTo: {
+                        name: "StayNest",
+                        email: process.env.BREVO_SENDER_EMAIL
+                    },
+                    subject,
+                    htmlContent: html
+                }),
+                signal: AbortSignal.timeout(20000)
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.messageId) {
+            console.error(
+                "Brevo email error:",
+                response.status,
+                result.message || "Email was not accepted."
+            );
+
+            return {
+                error: {
+                    message: result.message || "Email was not accepted."
+                }
+            };
+        }
+
+        return {
+            data: {
+                id: result.messageId
+            }
+        };
+
+    } catch (error) {
+        console.error("Brevo connection error:", error.message);
+
+        return {
+            error: {
+                message: "Could not connect to the email service."
+            }
+        };
+    }
+}
 
 let supabase;
 // Create secure admin session token
@@ -121,9 +182,9 @@ async function connectDatabase() {
         throw new Error("Supabase environment variables are missing.");
     }
 
-    if (!process.env.RESEND_API_KEY) {
-        throw new Error("Resend API key is missing.");
-    }
+   if (!process.env.BREVO_API_KEY || !process.env.BREVO_SENDER_EMAIL) {
+    throw new Error("Brevo API key or sender email is missing.");
+}
 
     const { createClient } = await import("@supabase/supabase-js");
 
@@ -602,7 +663,7 @@ app.post("/api/visits", async (req, res) => {
 });
 
 // Get All Enquiries
-app.get("/api/enquiries", async (req, res) => {
+app.get("/api/enquiries", requireAdmin, async (req, res) => {
     try {
         const { data, error } = await supabase
             .from("enquiries")
@@ -625,7 +686,7 @@ app.get("/api/enquiries", async (req, res) => {
 });
 
 // Send Reply Email
-app.post("/api/enquiries/:id/reply", async (req, res) => {
+app.post("/api/enquiries/:id/reply", requireAdmin, async (req, res) => {
     const { id } = req.params;
     const { reply } = req.body;
 
@@ -663,8 +724,8 @@ app.post("/api/enquiries/:id/reply", async (req, res) => {
 
         const cleanReply = reply.trim();
 
-        const emailResult = await resend.emails.send({
-            from: "StayNest <onboarding@resend.dev>",
+        const emailResult = await sendEmail({
+           
             to: [enquiry.email],
             subject: "Reply to Your StayNest Enquiry",
             html: `
@@ -727,7 +788,7 @@ app.post("/api/enquiries/:id/reply", async (req, res) => {
 });
 
 // Update Enquiry Status
-app.patch("/api/enquiries/:id/status", async (req, res) => {
+app.patch("/api/enquiries/:id/status", requireAdmin, async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
@@ -792,7 +853,7 @@ app.patch("/api/enquiries/:id/status", async (req, res) => {
 });
 
 // Get All Visit Requests
-app.get("/api/visits", async (req, res) => {
+app.get("/api/visits", requireAdmin, async (req, res) => {
     try {
         const { data, error } = await supabase
             .from("visits")
@@ -815,7 +876,7 @@ app.get("/api/visits", async (req, res) => {
 });
 
 // Update Visit Status and Send Email
-app.patch("/api/visits/:id/status", async (req, res) => {
+app.patch("/api/visits/:id/status", requireAdmin, async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
@@ -866,8 +927,8 @@ app.patch("/api/visits/:id/status", async (req, res) => {
         }
 
         try {
-            const emailResult = await resend.emails.send({
-                from: "StayNest <onboarding@resend.dev>",
+            const emailResult = await sendEmail({
+            
                 to: [visit.email],
                 subject: `StayNest Visit Request ${status}`,
                 html: `
