@@ -1410,20 +1410,49 @@ footer {
         padding: 22px;
     }
 }
-/* Navbar buttons */
-.nav-actions .login-btn,
-.nav-actions .signup-btn,
-.nav-actions .admin-login-btn,
-#loginBtn {
-    background-color: #344650;
-    color: #ffffff;
-    border: 1px solid #344650;
+/* Navbar */
+
+.navbar {
+    width: 100%;
+    height: 91px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
 }
 
-.nav-actions .login-btn:hover,
-.nav-actions .signup-btn:hover,
-.nav-actions .admin-login-btn:hover,
-#loginBtn:hover {
-    background-color: #263942;
-    color: #ffffff;
+.nav-container {
+    width: calc(100% - 48px);
+    max-width: 1422px;
+    height: 100%;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-actions button,
+.nav-actions a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: 0.3s;
 }
