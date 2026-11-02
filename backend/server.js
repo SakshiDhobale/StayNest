@@ -376,6 +376,136 @@ app.get("/api/pgs", async (req, res) => {
         });
     }
 });
+// Add PG
+app.post("/api/pgs", requireAdmin, async (req, res) => {
+    try {
+        const {
+            name,
+            location,
+            price,
+            description = "",
+            suitable_for = "",
+            image = "",
+            facilities = []
+        } = req.body || {};
+
+        if (
+            typeof name !== "string" ||
+            !name.trim() ||
+            name.trim().length > 150 ||
+            typeof location !== "string" ||
+            !location.trim() ||
+            location.trim().length > 300
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Enter a valid PG name and location."
+            });
+        }
+
+        if (
+            !["string", "number"].includes(typeof price) ||
+            String(price).trim() === "" ||
+            !Number.isFinite(Number(price)) ||
+            Number(price) <= 0 ||
+            Number(price) > 99999999.99
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Enter a valid monthly rent greater than zero."
+            });
+        }
+
+        if (
+            typeof description !== "string" ||
+            description.length > 3000 ||
+            typeof suitable_for !== "string" ||
+            suitable_for.length > 200 ||
+            typeof image !== "string" ||
+            image.length > 2000
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Please check the description, residents and image."
+            });
+        }
+
+        if (
+            !Array.isArray(facilities) ||
+            facilities.length > 20 ||
+            facilities.some(function (item) {
+                return typeof item !== "string" ||
+                    !item.trim() ||
+                    item.length > 100;
+            })
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Facilities must be a list of valid names."
+            });
+        }
+
+        const cleanImage = image.trim();
+
+        if (
+            cleanImage &&
+            !/^images\/[a-zA-Z0-9._-]+\.(jpg|jpeg|png|webp)$/i.test(cleanImage)
+        ) {
+            try {
+                const imageUrl = new URL(cleanImage);
+
+                if (
+                    imageUrl.protocol !== "https:" ||
+                    imageUrl.username ||
+                    imageUrl.password
+                ) {
+                    throw new Error("Invalid image URL");
+                }
+            } catch {
+                return res.status(400).json({
+                    success: false,
+                    message: "Use an HTTPS image URL or an images/filename.jpg path."
+                });
+            }
+        }
+
+        const { data, error } = await supabase
+            .from("pgs")
+            .insert({
+                name: name.trim(),
+                location: location.trim(),
+                price: Number(Number(price).toFixed(2)),
+                description: description.trim(),
+                suitable_for: suitable_for.trim(),
+                image: cleanImage,
+                facilities: [...new Set(
+                    facilities.map(function (item) {
+                        return item.trim();
+                    })
+                )]
+            })
+            .select()
+            .single();
+
+        if (error) {
+            throw error;
+        }
+
+        res.status(201).json({
+            success: true,
+            message: "PG added successfully!",
+            pg: data
+        });
+
+    } catch (error) {
+        console.error("Add PG error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Could not add PG. Please try again."
+        });
+    }
+});
 
 // Submit Enquiry
 app.post("/api/enquiries", async (req, res) => {
