@@ -1571,3 +1571,19 @@ footer {
     background: #218838 !important;
     border-color: #218838 !important;
 }
+#loginBtn,
+#mobileLoginBtn,
+.account-menu summary {
+    background: #344650 !important;
+    color: #ffffff !important;
+    border: 1px solid #344650 !important;
+}
+
+#loginBtn:hover,
+#mobileLoginBtn:hover,
+.account-menu summary:hover,
+.account-menu[open] summary {
+    background: #253740 !important;
+    color: #ffffff !important;
+    border-color: #253740 !important;
+}
