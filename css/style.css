@@ -1546,3 +1546,16 @@ footer {
         height: 70px;
     }
 }
+.nav-actions .login-btn,
+#mobileLoginBtn {
+    background: #28a745;
+    color: #ffffff;
+    border: 1px solid #28a745;
+}
+
+.nav-actions .login-btn:hover,
+#mobileLoginBtn:hover {
+    background: #218838;
+    color: #ffffff;
+    border-color: #218838;
+}
