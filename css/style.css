@@ -1630,3 +1630,12 @@ footer {
         background: #faf9f6;
     }
 }
+.why-staynest,
+.why-section {
+    background: linear-gradient(
+        110deg,
+        #fff8e8 0%,
+        #fffaf0 55%,
+        #f5f4ee 100%
+    );
+}
