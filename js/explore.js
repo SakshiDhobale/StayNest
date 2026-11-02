@@ -23,6 +23,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let allProperties = [];
     let isLoaded = false;
+    let selectedProperty = null;
+    let requestType = "enquiry";
+    let requestPending = false;
+    let popupOpener = null;
+    let savedOverflow = "";
+
+    const sampleImages = {
+        "StayWell Residency": "images/pg1.jpg",
+        "Sai Krupa PG": "images/pg2.png",
+        "Urban Nest PG": "images/pg3.jpg"
+    };
 
     // Facility filter
     let facilityFilter = document.getElementById("facilityFilter");
@@ -75,15 +86,16 @@ document.addEventListener("DOMContentLoaded", function () {
     function getFacilities(pg) {
         const value = pg.facilities || pg.amenities || [];
 
+        function cleanItems(items) {
+            return items.filter(function (item) {
+                return typeof item === "string";
+            }).map(function (item) {
+                return item.trim();
+            }).filter(Boolean);
+        }
+
         if (Array.isArray(value)) {
-            return value
-                .filter(function (item) {
-                    return typeof item === "string";
-                })
-                .map(function (item) {
-                    return item.trim();
-                })
-                .filter(Boolean);
+            return cleanItems(value);
         }
 
         if (typeof value === "string") {
@@ -91,15 +103,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 const parsed = JSON.parse(value);
 
                 if (Array.isArray(parsed)) {
-                    return parsed.filter(function (item) {
-                        return typeof item === "string" && item.trim();
-                    });
+                    return cleanItems(parsed);
                 }
             } catch {
-                return value.split(/[,/]/).map(function (item) {
-                    return item.trim();
-                }).filter(Boolean);
+                return cleanItems(value.split(/[,/]/));
             }
+
+            return cleanItems(value.split(/[,/]/));
         }
 
         return [];
@@ -120,7 +130,10 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             const url = new URL(value, window.location.href);
 
-            if (url.protocol === "https:" || url.protocol === "http:") {
+            if (
+                url.protocol === "https:" ||
+                url.protocol === "http:"
+            ) {
                 return url.href;
             }
         } catch {
@@ -128,6 +141,27 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         return "images/pg1.jpg";
+    }
+
+    // Read API response
+    async function readResponse(response) {
+        let result;
+
+        try {
+            result = await response.json();
+        } catch {
+            throw new Error(
+                "Unexpected server response. Please try again."
+            );
+        }
+
+        if (!response.ok) {
+            throw new Error(
+                result?.message || "Request failed. Please try again."
+            );
+        }
+
+        return result;
     }
 
     // Restore homepage filters
@@ -141,9 +175,11 @@ document.addEventListener("DOMContentLoaded", function () {
     if (requestedBudget && parsedBudget !== null) {
         const budgetValue = String(parsedBudget);
 
-        const exists = Array.from(budgetFilter.options).some(function (option) {
-            return option.value === budgetValue;
-        });
+        const exists = Array.from(budgetFilter.options).some(
+            function (option) {
+                return option.value === budgetValue;
+            }
+        );
 
         if (!exists) {
             budgetFilter.add(
@@ -159,269 +195,208 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const requestedFacility = params.get("facility") || "";
 
-    const matchedFacility = Array.from(facilityFilter.options).find(
+    const matchingFacility = Array.from(facilityFilter.options).find(
         function (option) {
             return normalizeFacility(option.value) ===
                 normalizeFacility(requestedFacility);
         }
     );
 
-    if (matchedFacility) {
-        facilityFilter.value = matchedFacility.value;
+    if (matchingFacility) {
+        facilityFilter.value = matchingFacility.value;
     }
 
-    // Load properties
-    async function loadProperties() {
-        isLoaded = false;
-        noProperties.hidden = true;
-        propertiesGrid.setAttribute("aria-busy", "true");
-
-        propertiesGrid.innerHTML = "<p>Loading PG listings...</p>";
-        listingCount.textContent = "Loading properties...";
-
-        try {
-            const response = await fetch(`${API_URL}/api/pgs`);
-
-            if (!response.ok) {
-                throw new Error("Unable to load PG listings.");
-            }
-
-            const data = await response.json();
-
-            if (!Array.isArray(data)) {
-                throw new Error("Unexpected PG listing response.");
-            }
-
-            allProperties = data.filter(function (pg) {
-                return pg && typeof pg === "object";
-            });
-
-            isLoaded = true;
-            filterProperties();
-
-        } catch (error) {
-            console.error("Error loading PGs:", error);
-
-            propertiesGrid.replaceChildren();
-            noProperties.hidden = true;
-
-            const message = document.createElement("p");
-            message.textContent =
-                "Unable to load PG listings. Please try again.";
-
-            const retryButton = document.createElement("button");
-            retryButton.type = "button";
-            retryButton.className = "primary-btn";
-            retryButton.textContent = "Try Again";
-
-            retryButton.addEventListener("click", loadProperties);
-
-            const container = document.createElement("div");
-            container.style.gridColumn = "1 / -1";
-            container.style.textAlign = "center";
-
-            message.style.marginBottom = "16px";
-
-            container.append(message, retryButton);
-            propertiesGrid.appendChild(container);
-
-            listingCount.textContent = "Unable to load properties";
-
-        } finally {
-            propertiesGrid.setAttribute("aria-busy", "false");
-        }
-    }
-
-    // Build property card
-    function createPropertyCard(pg) {
-        const name = String(pg.name || pg.title || "PG Accommodation");
-        const location = String(pg.location || "Location not available");
-        const price = getPrice(pg.price);
-        const rating = String(pg.rating || "New");
-
-        const card = document.createElement("article");
-        card.className = "property-card";
-
-        const imageBox = document.createElement("div");
-        imageBox.className = "property-image";
-
-        const image = document.createElement("img");
-        image.src = getImageUrl(pg.image || pg.image_url);
-        image.alt = name;
-        image.loading = "lazy";
-
-        image.addEventListener("error", function () {
-            image.src = "images/pg1.jpg";
-        }, { once: true });
-
-        imageBox.appendChild(image);
-
-        const info = document.createElement("div");
-        info.className = "property-info";
-
-        const titleRow = document.createElement("div");
-        titleRow.className = "property-title-row";
-
-        const title = document.createElement("h3");
-        title.textContent = name;
-
-        const ratingLabel = document.createElement("span");
-        ratingLabel.className = "rating";
-
-        const star = document.createElement("i");
-        star.className = "fa-solid fa-star";
-        star.setAttribute("aria-hidden", "true");
-
-        ratingLabel.append(star, document.createTextNode(` ${rating}`));
-        titleRow.append(title, ratingLabel);
-
-        const locationLabel = document.createElement("p");
-        locationLabel.className = "location";
-
-        const locationIcon = document.createElement("i");
-        locationIcon.className = "fa-solid fa-location-dot";
-        locationIcon.setAttribute("aria-hidden", "true");
-
-        locationLabel.append(
-            locationIcon,
-            document.createTextNode(` ${location}`)
-        );
-
-        info.append(titleRow, locationLabel);
-
-        if (pg.description) {
-            const description = document.createElement("p");
-            description.className = "property-description";
-            description.textContent = String(pg.description);
-
-            info.appendChild(description);
-        }
-
-        const facilities = getFacilities(pg);
-
-        if (facilities.length) {
-            const features = document.createElement("div");
-            features.className = "property-features";
-
-            facilities.forEach(function (facility) {
-                const badge = document.createElement("span");
-                badge.textContent = facility;
-                features.appendChild(badge);
-            });
-
-            info.appendChild(features);
-        }
-
-        const priceRow = document.createElement("div");
-        priceRow.className = "price-row";
-        priceRow.style.marginTop = "20px";
-
-        const priceBox = document.createElement("div");
-        priceBox.className = "price";
-
-        const priceLabel = document.createElement("strong");
-        priceLabel.textContent = price === null
-            ? "Rent on enquiry"
-            : `₹${price.toLocaleString("en-IN")}`;
-
-        priceBox.appendChild(priceLabel);
-
-        if (price !== null) {
-            const period = document.createElement("span");
-            period.textContent = " / month";
-            priceBox.appendChild(period);
-        }
-
-        priceRow.appendChild(priceBox);
-
-        if (pg.id !== null && pg.id !== undefined && String(pg.id) !== "") {
-            const detailsLink = document.createElement("a");
-            detailsLink.className = "view-btn";
-            detailsLink.href =
-                `pg-details.html?id=${encodeURIComponent(pg.id)}`;
-            detailsLink.textContent = "View Details";
-            detailsLink.setAttribute(
-                "aria-label",
-                `View details for ${name}`
-            );
-
-            priceRow.appendChild(detailsLink);
-        } else {
-            const unavailable = document.createElement("span");
-            unavailable.textContent = "Details unavailable";
-            unavailable.style.fontSize = "12px";
-
-            priceRow.appendChild(unavailable);
-        }
-
-        info.appendChild(priceRow);
-        card.append(imageBox, info);
-
-        return card;
-    }
-
-    // Display results
-    function displayProperties(properties) {
-        propertiesGrid.replaceChildren();
-
-        listingCount.textContent =
-            `${properties.length} PG${properties.length === 1 ? "" : "s"} found`;
-
-        noProperties.hidden = properties.length !== 0;
-
-        const fragment = document.createDocumentFragment();
-
-        properties.forEach(function (pg) {
-            fragment.appendChild(createPropertyCard(pg));
-        });
-
-        propertiesGrid.appendChild(fragment);
-    }
-
-    // Apply filters
-    function filterProperties() {
-        if (!isLoaded) return;
-
-        const location = locationFilter.value.trim().toLowerCase();
-        const budget = getPrice(budgetFilter.value);
-        const facility = normalizeFacility(facilityFilter.value);
-
-        const filtered = allProperties.filter(function (pg) {
-            const pgLocation = String(pg.location || "").toLowerCase();
-            const pgPrice = getPrice(pg.price);
-
-            const locationMatch =
-                !location || pgLocation.includes(location);
-
-            const budgetMatch =
-                budget === null ||
-                (pgPrice !== null && pgPrice <= budget);
-
-            const facilityMatch =
-                !facility ||
-                getFacilities(pg).some(function (item) {
-                    return normalizeFacility(item) === facility;
-                });
-
-            return locationMatch && budgetMatch && facilityMatch;
-        });
-
-        displayProperties(filtered);
-    }
-
-    // Filter buttons
-    filterBtn.addEventListener("click", filterProperties);
-    locationFilter.addEventListener("input", filterProperties);
-    budgetFilter.addEventListener("change", filterProperties);
-    facilityFilter.addEventListener("change", filterProperties);
-
-    locationFilter.addEventListener("keydown", function (event) {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            filterProperties();
-        }
-    });
-
-    loadProperties();
-
-});
+    // Property popup
+    const propertyDialog = document.createElement("dialog");
+
+    propertyDialog.className = "explore-property-dialog";
+    propertyDialog.setAttribute(
+        "aria-labelledby",
+        "explorePopupTitle"
+    );
+
+    propertyDialog.innerHTML = `
+        <div class="explore-popup-content">
+
+            <button
+                type="button"
+                class="explore-popup-close"
+                aria-label="Close property details"
+            >
+                ×
+            </button>
+
+            <h2 id="explorePopupTitle"></h2>
+
+            <p id="explorePopupLocation"></p>
+
+            <p id="explorePopupPrice"></p>
+
+            <div
+                class="property-features"
+                id="explorePopupFacilities"
+            ></div>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="exploreEnquiryTab"
+                    aria-pressed="true"
+                >
+                    Enquiry
+                </button>
+
+                <button
+                    type="button"
+                    id="exploreVisitTab"
+                    aria-pressed="false"
+                >
+                    Request a Visit
+                </button>
+
+            </div>
+
+            <form id="exploreRequestForm">
+
+                <h3 id="exploreRequestHeading">
+                    Send an Enquiry
+                </h3>
+
+                <label for="exploreRequestName">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="exploreRequestName"
+                    name="name"
+                    autocomplete="name"
+                    maxlength="100"
+                    required
+                >
+
+                <label for="exploreRequestEmail">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="exploreRequestEmail"
+                    name="email"
+                    autocomplete="email"
+                    required
+                >
+
+                <label for="exploreRequestPhone">
+                    Mobile Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="exploreRequestPhone"
+                    name="phone"
+                    pattern="[6-9][0-9]{9}"
+                    maxlength="10"
+                    inputmode="numeric"
+                    autocomplete="tel"
+                    title="Enter a 10-digit mobile number starting with 6, 7, 8 or 9"
+                    required
+                >
+
+                <div id="exploreVisitFields" hidden>
+
+                    <label for="exploreVisitDate">
+                        Visit Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="exploreVisitDate"
+                        name="date"
+                        disabled
+                    >
+
+                    <label for="exploreVisitTime">
+                        Visit Time
+                    </label>
+
+                    <input
+                        type="time"
+                        id="exploreVisitTime"
+                        name="time"
+                        disabled
+                    >
+
+                </div>
+
+                <label
+                    for="exploreRequestMessage"
+                    id="exploreMessageLabel"
+                >
+                    Message
+                </label>
+
+                <textarea
+                    id="exploreRequestMessage"
+                    name="message"
+                    rows="3"
+                    maxlength="2000"
+                    required
+                ></textarea>
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                    id="exploreRequestSubmit"
+                >
+                    Send Enquiry
+                </button>
+
+                <p
+                    id="exploreRequestStatus"
+                    role="status"
+                    aria-live="polite"
+                ></p>
+
+            </form>
+
+        </div>
+    `;
+
+    document.body.appendChild(propertyDialog);
+
+    const requestForm = propertyDialog.querySelector(
+        "#exploreRequestForm"
+    );
+
+    const requestStatus = propertyDialog.querySelector(
+        "#exploreRequestStatus"
+    );
+
+    const requestSubmit = propertyDialog.querySelector(
+        "#exploreRequestSubmit"
+    );
+
+    const visitFields = propertyDialog.querySelector(
+        "#exploreVisitFields"
+    );
+
+    const visitDate = propertyDialog.querySelector(
+        "#exploreVisitDate"
+    );
+
+    const visitTime = propertyDialog.querySelector(
+        "#exploreVisitTime"
+    );
+
+    const requestMessage = propertyDialog.querySelector(
+        "#exploreRequestMessage"
+    );
+
+    const enquiryTab = propertyDialog.querySelector(
+        "#exploreEnquiryTab"
+    );
+
+    const visitTab = propertyDialog.querySelector(
+        "#exploreVisit
