@@ -1328,3 +1328,19 @@ footer {
         padding: 22px;
     }
 }
+/* Login Button Green Color */
+#loginBtn,
+.auth-box form button,
+.auth-content form button {
+    background-color: #28a745;
+    color: #ffffff;
+    border: 1px solid #28a745;
+}
+
+#loginBtn:hover,
+.auth-box form button:hover,
+.auth-content form button:hover {
+    background-color: #218838;
+    border-color: #218838;
+    color: #ffffff;
+}
