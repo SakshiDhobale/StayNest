@@ -1592,7 +1592,22 @@ footer {
     color: #ffffff !important;
     border-color: #344650 !important;
 }
+.navbar {
+    background: #dce5e9;
+    border-bottom: 1px solid #c4d0d6;
+}
 
+.nav-links > a,
+.nav-links > a.active {
+    color: #344650;
+    font-weight: 700;
+}
+
+@media (max-width: 950px) {
+    .nav-links {
+        background: #dce5e9;
+    }
+}
 .account-menu > summary:hover,
 .account-menu[open] > summary {
     background: #253740 !important;
