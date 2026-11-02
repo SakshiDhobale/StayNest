@@ -1608,6 +1608,9 @@ footer {
         background: #dce5e9;
     }
 }
+#navLinks > a {
+    font-weight: 700 !important;
+}
 .account-menu > summary:hover,
 .account-menu[open] > summary {
     background: #253740 !important;
