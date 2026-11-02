@@ -1643,4 +1643,23 @@ footer {
 #about {
     background: #f7f7f5 !important;
 }
+.explore-filters {
+    grid-template-columns:
+        minmax(0, 1.3fr)
+        minmax(0, 1fr)
+        minmax(0, 1fr)
+        auto;
+}
+
+@media (max-width: 950px) {
+    .explore-filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .explore-filters {
+        grid-template-columns: 1fr;
+    }
+}
 
