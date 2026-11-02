@@ -1531,3 +1531,18 @@ footer {
         animation: none !important;
     }
 }
+.navbar {
+    height: 80px;
+    padding: 0;
+}
+
+.nav-container {
+    height: 100%;
+    align-items: center;
+}
+
+@media (max-width: 950px) {
+    .navbar {
+        height: 70px;
+    }
+}
