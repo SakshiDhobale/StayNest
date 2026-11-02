@@ -1417,3 +1417,15 @@ footer {
         padding: 22px;
     }
 }
+/* Login button colour fix */
+.nav-actions button#loginBtn {
+    background-color: #344650 !important;
+    color: #ffffff !important;
+    border: 1px solid #344650 !important;
+}
+
+.nav-actions button#loginBtn:hover {
+    background-color: #253740 !important;
+    color: #ffffff !important;
+    border-color: #253740 !important;
+}
