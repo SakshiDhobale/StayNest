@@ -1249,3 +1249,41 @@ button {
         font-size: 22px;
     }
 }
+/* Navbar Buttons */
+
+.nav-actions #loginBtn,
+.nav-actions #signupBtn,
+.nav-actions .login-btn,
+.nav-actions .signup-btn,
+.nav-actions .admin-login-btn,
+.nav-actions a[href="admin-login.html"] {
+    background: #344650 !important;
+    color: #ffffff !important;
+    border: 1px solid #344650 !important;
+}
+
+.nav-actions #loginBtn:hover,
+.nav-actions #signupBtn:hover,
+.nav-actions .login-btn:hover,
+.nav-actions .signup-btn:hover,
+.nav-actions .admin-login-btn:hover,
+.nav-actions a[href="admin-login.html"]:hover {
+    background: #253740 !important;
+    color: #ffffff !important;
+    border-color: #253740 !important;
+}
+
+/* Mobile Menu Buttons */
+
+.mobile-menu-actions button,
+.mobile-menu-actions a {
+    background: #344650 !important;
+    color: #ffffff !important;
+    border: 1px solid #344650 !important;
+}
+
+.mobile-menu-actions button:hover,
+.mobile-menu-actions a:hover {
+    background: #253740 !important;
+    color: #ffffff !important;
+}
