@@ -1587,3 +1587,13 @@ footer {
     color: #ffffff !important;
     border-color: #253740 !important;
 }
+.account-menu > summary {
+    background: #344650 !important;
+    color: #ffffff !important;
+    border-color: #344650 !important;
+}
+
+.account-menu > summary:hover,
+.account-menu[open] > summary {
+    background: #253740 !important;
+}
