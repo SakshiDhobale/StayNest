@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -237,6 +236,63 @@
             padding: 10px 0;
         }
 
+        [hidden] {
+            display: none !important;
+        }
+
+        #addPgForm {
+            display: grid;
+            gap: 12px;
+            max-width: 700px;
+        }
+
+        #addPgForm label {
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        #addPgForm input,
+        #addPgForm select,
+        #addPgForm textarea {
+            width: 100%;
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid #d9d9d5;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #344650;
+            font: inherit;
+            font-size: 16px;
+        }
+
+        #addPgForm textarea {
+            resize: vertical;
+        }
+
+        #addPgForm input:focus,
+        #addPgForm select:focus,
+        #addPgForm textarea:focus {
+            outline: 2px solid #344650;
+            outline-offset: 2px;
+        }
+
+        #savePgBtn {
+            margin-top: 12px;
+            justify-self: start;
+        }
+
+        #savePgBtn:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        #addPgMessage {
+            font-size: 14px;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
         @media (max-width: 700px) {
             body {
                 padding: 18px;
@@ -264,69 +320,11 @@
                 text-align: center;
             }
         }
-   [hidden] {
-    display: none !important;
-}
-
-#addPgForm {
-    display: grid;
-    gap: 12px;
-    max-width: 700px;
-}
-
-#addPgForm label {
-    margin-top: 8px;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-#addPgForm input,
-#addPgForm select,
-#addPgForm textarea {
-    width: 100%;
-    min-width: 0;
-    padding: 12px;
-    border: 1px solid #d9d9d5;
-    border-radius: 8px;
-    background: #ffffff;
-    color: #344650;
-    font: inherit;
-    font-size: 16px;
-}
-
-#addPgForm textarea {
-    resize: vertical;
-}
-
-#addPgForm input:focus,
-#addPgForm select:focus,
-#addPgForm textarea:focus {
-    outline: 2px solid #344650;
-    outline-offset: 2px;
-}
-
-#savePgBtn {
-    margin-top: 12px;
-    justify-self: start;
-}
-
-#savePgBtn:disabled {
-    opacity: 0.6;
-    cursor: wait;
-}
-
-#addPgMessage {
-    font-size: 14px;
-    line-height: 1.7;
-    overflow-wrap: anywhere;
-}
     </style>
 </head>
 
 <body>
     <div class="container">
-
-        <!-- Header -->
         <div class="top-bar">
             <div class="brand">
                 <div class="brand-icon">⌂</div>
@@ -341,21 +339,26 @@
 
             <div class="top-actions">
                 <button
-    type="button"
-    class="back-btn"
-    id="showAddPgBtn"
->
-    + Add PG / Rooms
-</button>
+                    type="button"
+                    class="back-btn"
+                    id="showAddPgBtn"
+                >
+                    + Add PG / Rooms
+                </button>
 
-<button
-    type="button"
-    class="refresh-btn"
-    id="adminLogoutBtn"
->
-    Logout
-</button>
-                <button class="refresh-btn" id="refreshBtn">
+                <button
+                    type="button"
+                    class="refresh-btn"
+                    id="adminLogoutBtn"
+                >
+                    Logout
+                </button>
+
+                <button
+                    type="button"
+                    class="refresh-btn"
+                    id="refreshBtn"
+                >
                     ↻ Refresh
                 </button>
 
@@ -365,117 +368,120 @@
             </div>
         </div>
 
-       <div class="section" id="addPgSection" hidden>
+        <div class="section" id="addPgSection" hidden>
+            <div class="section-header">
+                <div>
+                    <h2>Add PG Listing</h2>
+                    <p class="section-label">
+                        Enter the property information shown to users.
+                    </p>
+                </div>
+            </div>
 
-    <div class="section-header">
-        <div>
-            <h2>Add PG Listing</h2>
-            <p class="section-label">
-                Enter the property information shown to users.
-            </p>
+            <form id="addPgForm">
+                <label for="pgName">PG Name</label>
+                <input
+                    type="text"
+                    id="pgName"
+                    name="name"
+                    maxlength="150"
+                    required
+                >
+
+                <label for="pgLocation">Location</label>
+                <input
+                    type="text"
+                    id="pgLocation"
+                    name="location"
+                    placeholder="Area, City"
+                    maxlength="300"
+                    required
+                >
+
+                <label for="pgPrice">Monthly Rent (₹)</label>
+                <input
+                    type="number"
+                    id="pgPrice"
+                    name="price"
+                    min="0.01"
+                    max="99999999.99"
+                    step="0.01"
+                    required
+                >
+
+                <label for="pgSuitable">Suitable For</label>
+                <select id="pgSuitable" name="suitable_for">
+                    <option value="">Select residents</option>
+                    <option value="Girl students and working women">
+                        Girl students and working women
+                    </option>
+                    <option value="Boy students and working men">
+                        Boy students and working men
+                    </option>
+                    <option value="Students and working professionals">
+                        Students and working professionals
+                    </option>
+                </select>
+
+                <label for="pgDescription">Description</label>
+                <textarea
+                    id="pgDescription"
+                    name="description"
+                    rows="4"
+                    maxlength="3000"
+                ></textarea>
+
+                <label for="pgImage">Image URL or Path</label>
+                <input
+                    type="text"
+                    id="pgImage"
+                    name="image"
+                    placeholder="images/pg1.jpg or https://..."
+                    maxlength="2000"
+                >
+
+                <label for="pgFacilities">Facilities</label>
+                <input
+                    type="text"
+                    id="pgFacilities"
+                    name="facilities"
+                    placeholder="Wi-Fi, Meals, Furnished"
+                >
+
+                <button
+                    type="submit"
+                    class="back-btn"
+                    id="savePgBtn"
+                >
+                    Save PG
+                </button>
+
+                <p
+                    id="addPgMessage"
+                    role="status"
+                    aria-live="polite"
+                ></p>
+            </form>
         </div>
-    </div>
 
-    <form id="addPgForm">
-
-        <label for="pgName">PG Name</label>
-        <input
-            type="text"
-            id="pgName"
-            name="name"
-            maxlength="150"
-            required
-        >
-
-        <label for="pgLocation">Location</label>
-        <input
-            type="text"
-            id="pgLocation"
-            name="location"
-            placeholder="Area, City"
-            maxlength="300"
-            required
-        >
-
-        <label for="pgPrice">Monthly Rent (₹)</label>
-        <input
-            type="number"
-            id="pgPrice"
-            name="price"
-            min="0.01"
-            max="99999999.99"
-            step="0.01"
-            required
-        >
-
-        <label for="pgSuitable">Suitable For</label>
-        <select id="pgSuitable" name="suitable_for">
-            <option value="">Select residents</option>
-            <option value="Girl students and working women">
-                Girl students and working women
-            </option>
-            <option value="Boy students and working men">
-                Boy students and working men
-            </option>
-            <option value="Students and working professionals">
-                Students and working professionals
-            </option>
-        </select>
-
-        <label for="pgDescription">Description</label>
-        <textarea
-            id="pgDescription"
-            name="description"
-            rows="4"
-            maxlength="3000"
-        ></textarea>
-
-        <label for="pgImage">Image URL or Path</label>
-        <input
-            type="text"
-            id="pgImage"
-            name="image"
-            placeholder="images/pg1.jpg or https://..."
-            maxlength="2000"
-        >
-
-        <label for="pgFacilities">Facilities</label>
-        <input
-            type="text"
-            id="pgFacilities"
-            name="facilities"
-            placeholder="Wi-Fi, Meals, Furnished"
-        >
-
-        <button type="submit" class="back-btn" id="savePgBtn">
-            Save PG
-        </button>
-
-        <p id="addPgMessage" role="status" aria-live="polite"></p>
-
-    </form>
-
-</div>
-        <!-- Summary Cards -->
         <div class="summary">
             <div class="summary-card">
-                <span>Total Enquiries</span>
+                <span>Enquiries — Last 10 Days</span>
                 <strong id="enquiryCount">0</strong>
             </div>
 
             <div class="summary-card">
-                <span>Total Visit Requests</span>
+                <span>Visits — Last 10 Days</span>
                 <strong id="visitCount">0</strong>
             </div>
         </div>
 
-        <!-- Enquiries Section -->
         <div class="section">
             <div class="section-header">
                 <div>
                     <h2>Enquiries</h2>
                     <p class="section-label">
-                        Messages received from StayNest users
+                        Enquiries submitted in the last 10 days
                     </p>
                 </div>
             </div>
@@ -502,13 +508,13 @@
             </table>
         </div>
 
-        <!-- Visit Requests Section -->
         <div class="section">
             <div class="section-header">
                 <div>
                     <h2>Visit Requests</h2>
                     <p class="section-label">
-                        PG visit requests submitted by users
+                        Requests submitted in the last 10 days,
+                        based on submission time
                     </p>
                 </div>
             </div>
@@ -538,44 +544,92 @@
         <div class="footer">
             StayNest Admin Dashboard
         </div>
-
     </div>
 
     <script>
         const API_URL = "https://staynest-kl5u.onrender.com";
-        // Check admin authentication
-const adminToken = sessionStorage.getItem("staynestAdminToken");
 
-if (!adminToken) {
-    window.location.replace("admin-login.html");
-}
+        // Check admin login
+        const adminToken = sessionStorage.getItem(
+            "staynestAdminToken"
+        );
 
-// Add admin token to API requests
-const originalFetch = window.fetch.bind(window);
-
-window.fetch = function (url, options = {}) {
-    const requestOptions = {
-        ...options,
-        headers: {
-            ...(options.headers || {}),
-            "Authorization": `Bearer ${adminToken}`
-        }
-    };
-
-    return originalFetch(url, requestOptions).then(response => {
-        if (response.status === 401) {
-            sessionStorage.removeItem("staynestAdminToken");
+        if (!adminToken) {
             window.location.replace("admin-login.html");
         }
 
-        return response;
-    });
-};
+        // Add admin token to requests
+        const originalFetch = window.fetch.bind(window);
 
-        // Load Enquiries
+        window.fetch = function (url, options = {}) {
+            const requestOptions = {
+                ...options,
+                headers: {
+                    ...(options.headers || {}),
+                    "Authorization": `Bearer ${adminToken}`
+                }
+            };
+
+            return originalFetch(url, requestOptions)
+                .then(function (response) {
+                    if (response.status === 401) {
+                        sessionStorage.removeItem(
+                            "staynestAdminToken"
+                        );
+
+                        window.location.replace(
+                            "admin-login.html"
+                        );
+                    }
+
+                    return response;
+                });
+        };
+
+        // Show entries submitted during the last 10 days
+        function filterRecentRequests(
+            requests,
+            now = Date.now()
+        ) {
+            const cutoff = now - (
+                10 * 24 * 60 * 60 * 1000
+            );
+
+            return requests.filter(function (request) {
+                let value = String(
+                    request.created_at || ""
+                ).trim();
+
+                if (!value) {
+                    return false;
+                }
+
+                // Older dates without a timezone are UTC
+                value = value.replace(" ", "T");
+
+                if (
+                    !/(Z|[+-]\d{2}:?\d{2})$/i.test(value)
+                ) {
+                    value += "Z";
+                }
+
+                const createdAt = Date.parse(value);
+
+                return Number.isFinite(createdAt) &&
+                    createdAt > cutoff &&
+                    createdAt <= now;
+            });
+        }
+
+        // Load enquiries
         async function loadEnquiries() {
-            const table = document.getElementById("enquiryTable");
-            const count = document.getElementById("enquiryCount");
+            const table = document.getElementById(
+                "enquiryTable"
+            );
+
+            const count = document.getElementById(
+                "enquiryCount"
+            );
 
             try {
                 const response = await fetch(
@@ -583,10 +637,20 @@ window.fetch = function (url, options = {}) {
                 );
 
                 if (!response.ok) {
-                    throw new Error("Failed to load enquiries");
+                    throw new Error(
+                        "Failed to load enquiries"
+                    );
                 }
 
-                const data = await response.json();
+                const result = await response.json();
+
+                if (!Array.isArray(result)) {
+                    throw new Error(
+                        "Unexpected request data"
+                    );
+                }
+
+                const data = filterRecentRequests(result);
 
                 count.textContent = data.length;
                 table.innerHTML = "";
@@ -595,14 +659,16 @@ window.fetch = function (url, options = {}) {
                     table.innerHTML = `
                         <tr>
                             <td colspan="8" class="empty">
-                                No enquiries found.
+                                No enquiries submitted
+                                in the last 10 days.
                             </td>
                         </tr>
                     `;
+
                     return;
                 }
 
-                data.forEach(enquiry => {
+                data.forEach(function (enquiry) {
                     const row = document.createElement("tr");
 
                     const values = [
@@ -614,49 +680,51 @@ window.fetch = function (url, options = {}) {
                         enquiry.created_at || "-"
                     ];
 
-                    values.forEach(value => {
+                    values.forEach(function (value) {
                         const cell = document.createElement("td");
                         cell.textContent = value;
                         row.appendChild(cell);
                     });
 
-                    // Status
+                    // Enquiry status
                     const status = enquiry.status || "Pending";
-
                     const statusCell = document.createElement("td");
                     const statusBadge = document.createElement("span");
 
                     statusBadge.className =
                         "status " +
-                        (status === "Resolved"
-                            ? "resolved-status"
-                            : "pending-status");
+                        (
+                            status === "Resolved"
+                                ? "resolved-status"
+                                : "pending-status"
+                        );
 
                     statusBadge.textContent = status;
 
                     statusCell.appendChild(statusBadge);
                     row.appendChild(statusCell);
 
-                    // Actions
+                    // Enquiry actions
                     const actionsCell = document.createElement("td");
-
-                    const replyButton =
-                        document.createElement("button");
+                    const replyButton = document.createElement("button");
 
                     replyButton.type = "button";
-                    replyButton.className =
-                        "action-btn reply-btn";
+                    replyButton.className = "action-btn reply-btn";
                     replyButton.textContent = "Reply";
 
-                    replyButton.addEventListener("click", () => {
-                        sendEnquiryReply(enquiry.id);
-                    });
+                    replyButton.addEventListener(
+                        "click",
+                        function () {
+                            sendEnquiryReply(enquiry.id);
+                        }
+                    );
 
                     actionsCell.appendChild(replyButton);
 
                     if (status !== "Resolved") {
-                        const resolveButton =
-                            document.createElement("button");
+                        const resolveButton = document.createElement(
+                            "button"
+                        );
 
                         resolveButton.type = "button";
                         resolveButton.className =
@@ -664,12 +732,15 @@ window.fetch = function (url, options = {}) {
 
                         resolveButton.textContent = "Mark Resolved";
 
-                        resolveButton.addEventListener("click", () => {
-                            updateEnquiryStatus(
-                                enquiry.id,
-                                "Resolved"
-                            );
-                        });
+                        resolveButton.addEventListener(
+                            "click",
+                            function () {
+                                updateEnquiryStatus(
+                                    enquiry.id,
+                                    "Resolved"
+                                );
+                            }
+                        );
 
                         actionsCell.appendChild(resolveButton);
                     }
@@ -691,7 +762,7 @@ window.fetch = function (url, options = {}) {
             }
         }
 
-        // Send Custom Enquiry Reply Email
+        // Send enquiry reply
         async function sendEnquiryReply(id) {
             const reply = prompt(
                 "Write your reply message:"
@@ -722,6 +793,7 @@ window.fetch = function (url, options = {}) {
                         result.message ||
                         "Could not send reply."
                     );
+
                     return;
                 }
 
@@ -737,7 +809,7 @@ window.fetch = function (url, options = {}) {
             }
         }
 
-        // Mark Enquiry as Resolved
+        // Mark enquiry as resolved
         async function updateEnquiryStatus(id, status) {
             const confirmed = confirm(
                 "Are you sure you want to mark this enquiry as resolved?"
@@ -768,6 +840,7 @@ window.fetch = function (url, options = {}) {
                         result.message ||
                         "Could not update enquiry status."
                     );
+
                     return;
                 }
 
@@ -783,10 +856,15 @@ window.fetch = function (url, options = {}) {
             }
         }
 
-        // Load Visit Requests
+        // Load visit requests
         async function loadVisits() {
-            const table = document.getElementById("visitTable");
-            const count = document.getElementById("visitCount");
+            const table = document.getElementById(
+                "visitTable"
+            );
+
+            const count = document.getElementById(
+                "visitCount"
+            );
 
             try {
                 const response = await fetch(
@@ -794,10 +872,20 @@ window.fetch = function (url, options = {}) {
                 );
 
                 if (!response.ok) {
-                    throw new Error("Failed to load visit requests");
+                    throw new Error(
+                        "Failed to load visit requests"
+                    );
                 }
 
-                const data = await response.json();
+                const result = await response.json();
+
+                if (!Array.isArray(result)) {
+                    throw new Error(
+                        "Unexpected request data"
+                    );
+                }
+
+                const data = filterRecentRequests(result);
 
                 count.textContent = data.length;
                 table.innerHTML = "";
@@ -806,14 +894,16 @@ window.fetch = function (url, options = {}) {
                     table.innerHTML = `
                         <tr>
                             <td colspan="8" class="empty">
-                                No visit requests found.
+                                No visit requests submitted
+                                in the last 10 days.
                             </td>
                         </tr>
                     `;
+
                     return;
                 }
 
-                data.forEach(visit => {
+                data.forEach(function (visit) {
                     const row = document.createElement("tr");
 
                     const values = [
@@ -825,13 +915,13 @@ window.fetch = function (url, options = {}) {
                         visit.message || "-"
                     ];
 
-                    values.forEach(value => {
+                    values.forEach(function (value) {
                         const cell = document.createElement("td");
                         cell.textContent = value;
                         row.appendChild(cell);
                     });
 
-                    // Visit Status
+                    // Visit status
                     const statusCell = document.createElement("td");
                     const statusBadge = document.createElement("span");
                     const status = visit.status || "Pending";
@@ -842,12 +932,13 @@ window.fetch = function (url, options = {}) {
                     statusCell.appendChild(statusBadge);
                     row.appendChild(statusCell);
 
-                    // Visit Actions
+                    // Visit actions
                     const actionsCell = document.createElement("td");
 
                     if (status === "Pending") {
-                        const approveButton =
-                            document.createElement("button");
+                        const approveButton = document.createElement(
+                            "button"
+                        );
 
                         approveButton.type = "button";
                         approveButton.className =
@@ -855,15 +946,19 @@ window.fetch = function (url, options = {}) {
 
                         approveButton.textContent = "Approve";
 
-                        approveButton.addEventListener("click", () => {
-                            updateVisitStatus(
-                                visit.id,
-                                "Approved"
-                            );
-                        });
+                        approveButton.addEventListener(
+                            "click",
+                            function () {
+                                updateVisitStatus(
+                                    visit.id,
+                                    "Approved"
+                                );
+                            }
+                        );
 
-                        const rejectButton =
-                            document.createElement("button");
+                        const rejectButton = document.createElement(
+                            "button"
+                        );
 
                         rejectButton.type = "button";
                         rejectButton.className =
@@ -871,12 +966,15 @@ window.fetch = function (url, options = {}) {
 
                         rejectButton.textContent = "Reject";
 
-                        rejectButton.addEventListener("click", () => {
-                            updateVisitStatus(
-                                visit.id,
-                                "Rejected"
-                            );
-                        });
+                        rejectButton.addEventListener(
+                            "click",
+                            function () {
+                                updateVisitStatus(
+                                    visit.id,
+                                    "Rejected"
+                                );
+                            }
+                        );
 
                         actionsCell.appendChild(approveButton);
                         actionsCell.appendChild(rejectButton);
@@ -902,7 +1000,7 @@ window.fetch = function (url, options = {}) {
             }
         }
 
-        // Approve or Reject Visit Request
+        // Approve or reject visit
         async function updateVisitStatus(id, status) {
             const confirmed = confirm(
                 `Are you sure you want to ${status.toLowerCase()} this visit request?`
@@ -933,6 +1031,7 @@ window.fetch = function (url, options = {}) {
                         result.message ||
                         "Unable to update visit status."
                     );
+
                     return;
                 }
 
@@ -948,7 +1047,7 @@ window.fetch = function (url, options = {}) {
             }
         }
 
-        // Load both dashboard sections
+        // Load dashboard
         async function loadDashboard() {
             await Promise.all([
                 loadEnquiries(),
@@ -956,135 +1055,197 @@ window.fetch = function (url, options = {}) {
             ]);
         }
 
-        // Refresh Button
-        document
-            .getElementById("refreshBtn")
+        document.getElementById("refreshBtn")
             .addEventListener("click", loadDashboard);
 
-        // Initial Dashboard Load
         loadDashboard();
 
-  // Add PG form
-const addPgSection = document.getElementById("addPgSection");
-const addPgForm = document.getElementById("addPgForm");
-const showAddPgBtn = document.getElementById("showAddPgBtn");
-const savePgBtn = document.getElementById("savePgBtn");
-const addPgMessage = document.getElementById("addPgMessage");
+        // Add PG form
+        const addPgSection = document.getElementById(
+            "addPgSection"
+        );
 
-let savingPg = false;
+        const addPgForm = document.getElementById(
+            "addPgForm"
+        );
 
-showAddPgBtn.setAttribute("aria-controls", "addPgSection");
-showAddPgBtn.setAttribute("aria-expanded", "false");
+        const showAddPgBtn = document.getElementById(
+            "showAddPgBtn"
+        );
 
-// Open or close form
-showAddPgBtn.addEventListener("click", function () {
-    addPgSection.hidden = !addPgSection.hidden;
+        const savePgBtn = document.getElementById(
+            "savePgBtn"
+        );
 
-    showAddPgBtn.setAttribute(
-        "aria-expanded",
-        String(!addPgSection.hidden)
-    );
+        const addPgMessage = document.getElementById(
+            "addPgMessage"
+        );
 
-    if (!addPgSection.hidden) {
-        document.getElementById("pgName").focus();
-    }
-});
+        let savingPg = false;
 
-// Save PG
-addPgForm.addEventListener("submit", async function (event) {
-    event.preventDefault();
+        showAddPgBtn.setAttribute(
+            "aria-controls",
+            "addPgSection"
+        );
 
-    if (savingPg || !addPgForm.reportValidity()) {
-        return;
-    }
+        showAddPgBtn.setAttribute(
+            "aria-expanded",
+            "false"
+        );
 
-    const values = new FormData(addPgForm);
+        // Open or close form
+        showAddPgBtn.addEventListener(
+            "click",
+            function () {
+                addPgSection.hidden = !addPgSection.hidden;
 
-    const pg = {
-        name: String(values.get("name") || "").trim(),
-        location: String(values.get("location") || "").trim(),
-        price: Number(values.get("price")),
-        suitable_for: String(values.get("suitable_for") || "").trim(),
-        description: String(values.get("description") || "").trim(),
-        image: String(values.get("image") || "").trim(),
-        facilities: String(values.get("facilities") || "")
-            .split(",")
-            .map(function (item) {
-                return item.trim();
-            })
-            .filter(Boolean)
-    };
+                showAddPgBtn.setAttribute(
+                    "aria-expanded",
+                    String(!addPgSection.hidden)
+                );
 
-    addPgMessage.textContent = "";
-    addPgMessage.style.color = "#b42318";
+                if (!addPgSection.hidden) {
+                    document.getElementById("pgName").focus();
+                }
+            }
+        );
 
-    if (!pg.name || !pg.location) {
-        addPgMessage.textContent =
-            "Please enter the PG name and location.";
-        return;
-    }
+        // Save PG
+        addPgForm.addEventListener(
+            "submit",
+            async function (event) {
+                event.preventDefault();
 
-    savingPg = true;
-    savePgBtn.disabled = true;
-    savePgBtn.textContent = "Saving...";
-    addPgForm.setAttribute("aria-busy", "true");
+                if (
+                    savingPg ||
+                    !addPgForm.reportValidity()
+                ) {
+                    return;
+                }
 
-    try {
-        const response = await fetch(`${API_URL}/api/pgs`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${adminToken}`
-            },
-            body: JSON.stringify(pg)
-        });
+                const values = new FormData(addPgForm);
 
-        if (response.status === 401) {
-            return;
-        }
+                const pg = {
+                    name: String(
+                        values.get("name") || ""
+                    ).trim(),
 
-        let result;
+                    location: String(
+                        values.get("location") || ""
+                    ).trim(),
 
-        try {
-            result = await response.json();
-        } catch {
-            throw new Error(
-                "Unexpected server response. Check the Properties page before trying again."
-            );
-        }
+                    price: Number(values.get("price")),
 
-        if (!response.ok || !result.success) {
-            throw new Error(
-                result.message || "Could not save PG."
-            );
-        }
+                    suitable_for: String(
+                        values.get("suitable_for") || ""
+                    ).trim(),
 
-        addPgForm.reset();
+                    description: String(
+                        values.get("description") || ""
+                    ).trim(),
 
-        addPgMessage.textContent =
-            "PG added successfully! Open the Properties page to view it.";
+                    image: String(
+                        values.get("image") || ""
+                    ).trim(),
 
-        addPgMessage.style.color = "#218838";
+                    facilities: String(
+                        values.get("facilities") || ""
+                    )
+                        .split(",")
+                        .map(function (item) {
+                            return item.trim();
+                        })
+                        .filter(Boolean)
+                };
 
-    } catch (error) {
-        addPgMessage.textContent = error instanceof TypeError
-            ? "Connection interrupted. Check the Properties page before submitting again."
-            : error.message;
+                addPgMessage.textContent = "";
+                addPgMessage.style.color = "#b42318";
 
-    } finally {
-        savingPg = false;
-        savePgBtn.disabled = false;
-        savePgBtn.textContent = "Save PG";
-        addPgForm.removeAttribute("aria-busy");
-    }
-});
+                if (!pg.name || !pg.location) {
+                    addPgMessage.textContent =
+                        "Please enter the PG name and location.";
 
-// Admin logout
-document.getElementById("adminLogoutBtn")
-    .addEventListener("click", function () {
-        sessionStorage.removeItem("staynestAdminToken");
-        window.location.replace("admin-login.html");
-    });
+                    return;
+                }
+
+                savingPg = true;
+                savePgBtn.disabled = true;
+                savePgBtn.textContent = "Saving...";
+
+                addPgForm.setAttribute(
+                    "aria-busy",
+                    "true"
+                );
+
+                try {
+                    const response = await fetch(
+                        `${API_URL}/api/pgs`,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${adminToken}`
+                            },
+                            body: JSON.stringify(pg)
+                        }
+                    );
+
+                    if (response.status === 401) {
+                        return;
+                    }
+
+                    let result;
+
+                    try {
+                        result = await response.json();
+
+                    } catch {
+                        throw new Error(
+                            "Unexpected server response. Check the Properties page before trying again."
+                        );
+                    }
+
+                    if (!response.ok || !result.success) {
+                        throw new Error(
+                            result.message ||
+                            "Could not save PG."
+                        );
+                    }
+
+                    addPgForm.reset();
+
+                    addPgMessage.textContent =
+                        "PG added successfully! Open the Properties page to view it.";
+
+                    addPgMessage.style.color = "#218838";
+
+                } catch (error) {
+                    addPgMessage.textContent =
+                        error instanceof TypeError
+                            ? "Connection interrupted. Check the Properties page before submitting again."
+                            : error.message;
+
+                } finally {
+                    savingPg = false;
+                    savePgBtn.disabled = false;
+                    savePgBtn.textContent = "Save PG";
+
+                    addPgForm.removeAttribute("aria-busy");
+                }
+            }
+        );
+
+        // Admin logout
+        document.getElementById("adminLogoutBtn")
+            .addEventListener("click", function () {
+                sessionStorage.removeItem(
+                    "staynestAdminToken"
+                );
+
+                window.location.replace(
+                    "admin-login.html"
+                );
+            });
     </script>
 </body>
 </html>
