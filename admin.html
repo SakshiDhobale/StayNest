@@ -49,6 +49,7 @@
             align-items: center;
             justify-content: center;
             font-size: 20px;
+            flex-shrink: 0;
         }
 
         .brand h1 {
@@ -60,6 +61,7 @@
         .section-label {
             color: #626b6f;
             font-size: 14px;
+            line-height: 1.6;
         }
 
         .top-actions {
@@ -150,21 +152,31 @@
             padding: 13px 12px;
             border-bottom: 1px solid #d9d9d5;
             text-align: left;
+            vertical-align: top;
         }
 
         th {
             background: #f1f1ef;
             color: #344650;
             font-size: 13px;
+            white-space: nowrap;
         }
 
         td {
             color: #626b6f;
             font-size: 14px;
+            line-height: 1.6;
         }
 
         tbody tr:hover {
             background: #fafaf8;
+        }
+
+        .message-cell {
+            min-width: 200px;
+            max-width: 320px;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
         }
 
         .status {
@@ -178,9 +190,15 @@
             white-space: nowrap;
         }
 
-        .resolved-status {
+        .resolved-status,
+        .approved-status {
             background: #e8eee9;
             color: #34785a;
+        }
+
+        .rejected-status {
+            background: #f8eaea;
+            color: #a84b4b;
         }
 
         .pending-status {
@@ -196,6 +214,7 @@
             margin: 3px;
             color: white;
             font-size: 12px;
+            white-space: nowrap;
         }
 
         .approve-btn {
@@ -221,7 +240,7 @@
 
         .empty,
         .error {
-            padding: 15px;
+            padding: 20px;
             text-align: center;
         }
 
@@ -260,7 +279,7 @@
             padding: 12px;
             border: 1px solid #d9d9d5;
             border-radius: 8px;
-            background: #ffffff;
+            background: white;
             color: #344650;
             font: inherit;
             font-size: 16px;
@@ -489,12 +508,12 @@
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>Sr. No.</th>
                         <th>Name</th>
                         <th>Email</th>
                         <th>Phone</th>
                         <th>Message</th>
-                        <th>Date</th>
+                        <th>Submitted On</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -513,8 +532,7 @@
                 <div>
                     <h2>Visit Requests</h2>
                     <p class="section-label">
-                        Requests submitted in the last 10 days,
-                        based on submission time
+                        Requests submitted in the last 10 days
                     </p>
                 </div>
             </div>
@@ -522,11 +540,11 @@
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>Sr. No.</th>
                         <th>Name</th>
                         <th>Phone</th>
-                        <th>Date</th>
-                        <th>Time</th>
+                        <th>Visit Date</th>
+                        <th>Visit Time</th>
                         <th>Message</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -558,96 +576,184 @@
             window.location.replace("admin-login.html");
         }
 
-        // Add admin token to requests
-        const originalFetch = window.fetch.bind(window);
+        // Read database dates
+        function getCreatedTime(value) {
+            let dateValue = String(value || "").trim();
 
-        window.fetch = function (url, options = {}) {
-            const requestOptions = {
-                ...options,
-                headers: {
-                    ...(options.headers || {}),
-                    "Authorization": `Bearer ${adminToken}`
-                }
-            };
+            if (!dateValue) {
+                return NaN;
+            }
 
-            return originalFetch(url, requestOptions)
-                .then(function (response) {
-                    if (response.status === 401) {
-                        sessionStorage.removeItem(
-                            "staynestAdminToken"
-                        );
+            dateValue = dateValue.replace(" ", "T");
 
-                        window.location.replace(
-                            "admin-login.html"
-                        );
-                    }
+            // Older dates without a timezone are UTC
+            if (!/(Z|[+-]\d{2}:?\d{2})$/i.test(dateValue)) {
+                dateValue += "Z";
+            }
 
-                    return response;
+            return Date.parse(dateValue);
+        }
+
+        // Show recent entries with the latest first
+        function filterRecentRequests(requests) {
+            const now = Date.now();
+            const cutoff = now - (10 * 24 * 60 * 60 * 1000);
+
+            return requests
+                .filter(function (request) {
+                    const createdAt = getCreatedTime(
+                        request.created_at
+                    );
+
+                    return Number.isFinite(createdAt) &&
+                        createdAt > cutoff &&
+                        createdAt <= now;
+                })
+                .sort(function (first, second) {
+                    return getCreatedTime(second.created_at) -
+                        getCreatedTime(first.created_at);
                 });
-        };
+        }
 
-        // Show entries submitted during the last 10 days
-        function filterRecentRequests(
-            requests,
-            now = Date.now()
-        ) {
-            const cutoff = now - (
-                10 * 24 * 60 * 60 * 1000
+        // Format submission date
+        function formatCreatedDate(value) {
+            const time = getCreatedTime(value);
+
+            if (!Number.isFinite(time)) {
+                return "-";
+            }
+
+            return new Date(time).toLocaleString("en-IN", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+        }
+
+        // Send authenticated admin requests
+        async function adminFetch(path, options = {}) {
+            const headers = new Headers(options.headers || {});
+
+            headers.set(
+                "Authorization",
+                `Bearer ${adminToken}`
             );
 
-            return requests.filter(function (request) {
-                let value = String(
-                    request.created_at || ""
-                ).trim();
+            const response = await fetch(
+                `${API_URL}${path}`,
+                {
+                    ...options,
+                    headers
+                }
+            );
 
-                if (!value) {
-                    return false;
+            if (response.status === 401) {
+                sessionStorage.removeItem(
+                    "staynestAdminToken"
+                );
+
+                window.location.replace("admin-login.html");
+
+                throw new Error(
+                    "Admin session expired. Please login again."
+                );
+            }
+
+            return response;
+        }
+
+        // Add text cells safely
+        function addCells(row, values, messageIndex) {
+            values.forEach(function (value, index) {
+                const cell = document.createElement("td");
+
+                cell.textContent = value ?? "-";
+
+                if (index === messageIndex) {
+                    cell.className = "message-cell";
                 }
 
-                // Older dates without a timezone are UTC
-                value = value.replace(" ", "T");
-
-                if (
-                    !/(Z|[+-]\d{2}:?\d{2})$/i.test(value)
-                ) {
-                    value += "Z";
-                }
-
-                const createdAt = Date.parse(value);
-
-                return Number.isFinite(createdAt) &&
-                    createdAt > cutoff &&
-                    createdAt <= now;
+                row.appendChild(cell);
             });
+        }
+
+        // Create status badge
+        function createStatusCell(status) {
+            const cell = document.createElement("td");
+            const badge = document.createElement("span");
+
+            const statusClasses = {
+                Pending: "pending-status",
+                Resolved: "resolved-status",
+                Approved: "approved-status",
+                Rejected: "rejected-status"
+            };
+
+            badge.className =
+                "status " + (statusClasses[status] || "");
+
+            badge.textContent = status;
+            cell.appendChild(badge);
+
+            return cell;
+        }
+
+        // Create action button
+        function createActionButton(text, className, action) {
+            const button = document.createElement("button");
+
+            button.type = "button";
+            button.className = `action-btn ${className}`;
+            button.textContent = text;
+
+            button.addEventListener("click", async function () {
+                button.disabled = true;
+
+                try {
+                    await action();
+                } finally {
+                    button.disabled = false;
+                }
+            });
+
+            return button;
+        }
+
+        // Show table message
+        function showTableMessage(table, message, isError = false) {
+            table.innerHTML = "";
+
+            const row = document.createElement("tr");
+            const cell = document.createElement("td");
+
+            cell.colSpan = 8;
+            cell.className = isError ? "error" : "empty";
+            cell.textContent = message;
+
+            row.appendChild(cell);
+            table.appendChild(row);
         }
 
         // Load enquiries
         async function loadEnquiries() {
-            const table = document.getElementById(
-                "enquiryTable"
-            );
-
-            const count = document.getElementById(
-                "enquiryCount"
-            );
+            const table = document.getElementById("enquiryTable");
+            const count = document.getElementById("enquiryCount");
 
             try {
-                const response = await fetch(
-                    `${API_URL}/api/enquiries`
+                const response = await adminFetch(
+                    "/api/enquiries"
                 );
 
                 if (!response.ok) {
-                    throw new Error(
-                        "Failed to load enquiries"
-                    );
+                    throw new Error("Failed to load enquiries.");
                 }
 
                 const result = await response.json();
 
                 if (!Array.isArray(result)) {
-                    throw new Error(
-                        "Unexpected request data"
-                    );
+                    throw new Error("Unexpected enquiry data.");
                 }
 
                 const data = filterRecentRequests(result);
@@ -656,86 +762,54 @@
                 table.innerHTML = "";
 
                 if (data.length === 0) {
-                    table.innerHTML = `
-                        <tr>
-                            <td colspan="8" class="empty">
-                                No enquiries submitted
-                                in the last 10 days.
-                            </td>
-                        </tr>
-                    `;
+                    showTableMessage(
+                        table,
+                        "No enquiries submitted in the last 10 days."
+                    );
 
                     return;
                 }
 
-                data.forEach(function (enquiry) {
+                data.forEach(function (enquiry, index) {
                     const row = document.createElement("tr");
 
-                    const values = [
-                        enquiry.id,
-                        enquiry.name,
-                        enquiry.email,
-                        enquiry.phone || "-",
-                        enquiry.message || "-",
-                        enquiry.created_at || "-"
-                    ];
+                    addCells(
+                        row,
+                        [
+                            index + 1,
+                            enquiry.name,
+                            enquiry.email,
+                            enquiry.phone || "-",
+                            enquiry.message || "-",
+                            formatCreatedDate(enquiry.created_at)
+                        ],
+                        4
+                    );
 
-                    values.forEach(function (value) {
-                        const cell = document.createElement("td");
-                        cell.textContent = value;
-                        row.appendChild(cell);
-                    });
-
-                    // Enquiry status
                     const status = enquiry.status || "Pending";
-                    const statusCell = document.createElement("td");
-                    const statusBadge = document.createElement("span");
 
-                    statusBadge.className =
-                        "status " +
-                        (
-                            status === "Resolved"
-                                ? "resolved-status"
-                                : "pending-status"
-                        );
+                    row.appendChild(
+                        createStatusCell(status)
+                    );
 
-                    statusBadge.textContent = status;
-
-                    statusCell.appendChild(statusBadge);
-                    row.appendChild(statusCell);
-
-                    // Enquiry actions
                     const actionsCell = document.createElement("td");
-                    const replyButton = document.createElement("button");
 
-                    replyButton.type = "button";
-                    replyButton.className = "action-btn reply-btn";
-                    replyButton.textContent = "Reply";
-
-                    replyButton.addEventListener(
-                        "click",
+                    const replyButton = createActionButton(
+                        "Reply",
+                        "reply-btn",
                         function () {
-                            sendEnquiryReply(enquiry.id);
+                            return sendEnquiryReply(enquiry.id);
                         }
                     );
 
                     actionsCell.appendChild(replyButton);
 
                     if (status !== "Resolved") {
-                        const resolveButton = document.createElement(
-                            "button"
-                        );
-
-                        resolveButton.type = "button";
-                        resolveButton.className =
-                            "action-btn resolve-btn";
-
-                        resolveButton.textContent = "Mark Resolved";
-
-                        resolveButton.addEventListener(
-                            "click",
+                        const resolveButton = createActionButton(
+                            "Mark Resolved",
+                            "resolve-btn",
                             function () {
-                                updateEnquiryStatus(
+                                return updateEnquiryStatus(
                                     enquiry.id,
                                     "Resolved"
                                 );
@@ -752,13 +826,13 @@
             } catch (error) {
                 console.error("Enquiry Error:", error);
 
-                table.innerHTML = `
-                    <tr>
-                        <td colspan="8" class="error">
-                            Unable to load enquiries.
-                        </td>
-                    </tr>
-                `;
+                count.textContent = "-";
+
+                showTableMessage(
+                    table,
+                    "Unable to load enquiries.",
+                    true
+                );
             }
         }
 
@@ -773,8 +847,8 @@
             }
 
             try {
-                const response = await fetch(
-                    `${API_URL}/api/enquiries/${id}/reply`,
+                const response = await adminFetch(
+                    `/api/enquiries/${id}/reply`,
                     {
                         method: "POST",
                         headers: {
@@ -789,22 +863,20 @@
                 const result = await response.json();
 
                 if (!response.ok || !result.success) {
-                    alert(
-                        result.message ||
-                        "Could not send reply."
+                    throw new Error(
+                        result.message || "Could not send reply."
                     );
-
-                    return;
                 }
 
-                alert(result.message);
+                alert(result.message || "Reply sent successfully.");
                 await loadEnquiries();
 
             } catch (error) {
                 console.error("Reply Error:", error);
 
                 alert(
-                    "Unable to send email. Please check backend connection."
+                    error.message ||
+                    "Unable to send email. Please try again."
                 );
             }
         }
@@ -820,15 +892,15 @@
             }
 
             try {
-                const response = await fetch(
-                    `${API_URL}/api/enquiries/${id}/status`,
+                const response = await adminFetch(
+                    `/api/enquiries/${id}/status`,
                     {
                         method: "PATCH",
                         headers: {
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
-                            status: status
+                            status
                         })
                     }
                 );
@@ -836,53 +908,49 @@
                 const result = await response.json();
 
                 if (!response.ok || !result.success) {
-                    alert(
+                    throw new Error(
                         result.message ||
                         "Could not update enquiry status."
                     );
-
-                    return;
                 }
 
-                alert(result.message);
+                alert(
+                    result.message ||
+                    "Enquiry marked as resolved."
+                );
+
                 await loadEnquiries();
 
             } catch (error) {
                 console.error("Resolve Error:", error);
 
                 alert(
-                    "Unable to update enquiry status. Check backend connection."
+                    error.message ||
+                    "Unable to update enquiry status."
                 );
             }
         }
 
-        // Load visit requests
+        // Load visits
         async function loadVisits() {
-            const table = document.getElementById(
-                "visitTable"
-            );
-
-            const count = document.getElementById(
-                "visitCount"
-            );
+            const table = document.getElementById("visitTable");
+            const count = document.getElementById("visitCount");
 
             try {
-                const response = await fetch(
-                    `${API_URL}/api/visits`
+                const response = await adminFetch(
+                    "/api/visits"
                 );
 
                 if (!response.ok) {
                     throw new Error(
-                        "Failed to load visit requests"
+                        "Failed to load visit requests."
                     );
                 }
 
                 const result = await response.json();
 
                 if (!Array.isArray(result)) {
-                    throw new Error(
-                        "Unexpected request data"
-                    );
+                    throw new Error("Unexpected visit data.");
                 }
 
                 const data = filterRecentRequests(result);
@@ -891,85 +959,55 @@
                 table.innerHTML = "";
 
                 if (data.length === 0) {
-                    table.innerHTML = `
-                        <tr>
-                            <td colspan="8" class="empty">
-                                No visit requests submitted
-                                in the last 10 days.
-                            </td>
-                        </tr>
-                    `;
+                    showTableMessage(
+                        table,
+                        "No visit requests submitted in the last 10 days."
+                    );
 
                     return;
                 }
 
-                data.forEach(function (visit) {
+                data.forEach(function (visit, index) {
                     const row = document.createElement("tr");
 
-                    const values = [
-                        visit.id,
-                        visit.name,
-                        visit.phone,
-                        visit.date || "-",
-                        visit.time || "-",
-                        visit.message || "-"
-                    ];
+                    addCells(
+                        row,
+                        [
+                            index + 1,
+                            visit.name,
+                            visit.phone || "-",
+                            visit.date || "-",
+                            visit.time || "-",
+                            visit.message || "-"
+                        ],
+                        5
+                    );
 
-                    values.forEach(function (value) {
-                        const cell = document.createElement("td");
-                        cell.textContent = value;
-                        row.appendChild(cell);
-                    });
-
-                    // Visit status
-                    const statusCell = document.createElement("td");
-                    const statusBadge = document.createElement("span");
                     const status = visit.status || "Pending";
 
-                    statusBadge.className = "status";
-                    statusBadge.textContent = status;
+                    row.appendChild(
+                        createStatusCell(status)
+                    );
 
-                    statusCell.appendChild(statusBadge);
-                    row.appendChild(statusCell);
-
-                    // Visit actions
                     const actionsCell = document.createElement("td");
 
                     if (status === "Pending") {
-                        const approveButton = document.createElement(
-                            "button"
-                        );
-
-                        approveButton.type = "button";
-                        approveButton.className =
-                            "action-btn approve-btn";
-
-                        approveButton.textContent = "Approve";
-
-                        approveButton.addEventListener(
-                            "click",
+                        const approveButton = createActionButton(
+                            "Approve",
+                            "approve-btn",
                             function () {
-                                updateVisitStatus(
+                                return updateVisitStatus(
                                     visit.id,
                                     "Approved"
                                 );
                             }
                         );
 
-                        const rejectButton = document.createElement(
-                            "button"
-                        );
-
-                        rejectButton.type = "button";
-                        rejectButton.className =
-                            "action-btn reject-btn";
-
-                        rejectButton.textContent = "Reject";
-
-                        rejectButton.addEventListener(
-                            "click",
+                        const rejectButton = createActionButton(
+                            "Reject",
+                            "reject-btn",
                             function () {
-                                updateVisitStatus(
+                                return updateVisitStatus(
                                     visit.id,
                                     "Rejected"
                                 );
@@ -990,20 +1028,24 @@
             } catch (error) {
                 console.error("Visit Error:", error);
 
-                table.innerHTML = `
-                    <tr>
-                        <td colspan="8" class="error">
-                            Unable to load visit requests.
-                        </td>
-                    </tr>
-                `;
+                count.textContent = "-";
+
+                showTableMessage(
+                    table,
+                    "Unable to load visit requests.",
+                    true
+                );
             }
         }
 
         // Approve or reject visit
         async function updateVisitStatus(id, status) {
+            const action = status === "Approved"
+                ? "approve"
+                : "reject";
+
             const confirmed = confirm(
-                `Are you sure you want to ${status.toLowerCase()} this visit request?`
+                `Are you sure you want to ${action} this visit request?`
             );
 
             if (!confirmed) {
@@ -1011,15 +1053,15 @@
             }
 
             try {
-                const response = await fetch(
-                    `${API_URL}/api/visits/${id}/status`,
+                const response = await adminFetch(
+                    `/api/visits/${id}/status`,
                     {
                         method: "PATCH",
                         headers: {
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
-                            status: status
+                            status
                         })
                     }
                 );
@@ -1027,38 +1069,51 @@
                 const result = await response.json();
 
                 if (!response.ok || !result.success) {
-                    alert(
+                    throw new Error(
                         result.message ||
                         "Unable to update visit status."
                     );
-
-                    return;
                 }
 
-                alert(result.message);
+                alert(
+                    result.message ||
+                    "Visit status updated."
+                );
+
                 await loadVisits();
 
             } catch (error) {
-                console.error("Status Update Error:", error);
+                console.error("Visit Status Error:", error);
 
                 alert(
-                    "Backend connection failed. Please check the server."
+                    error.message ||
+                    "Unable to update visit status."
                 );
             }
         }
 
-        // Load dashboard
+        // Refresh dashboard
         async function loadDashboard() {
-            await Promise.all([
-                loadEnquiries(),
-                loadVisits()
-            ]);
+            const refreshButton = document.getElementById(
+                "refreshBtn"
+            );
+
+            refreshButton.disabled = true;
+            refreshButton.textContent = "Refreshing...";
+
+            try {
+                await Promise.all([
+                    loadEnquiries(),
+                    loadVisits()
+                ]);
+            } finally {
+                refreshButton.disabled = false;
+                refreshButton.textContent = "↻ Refresh";
+            }
         }
 
         document.getElementById("refreshBtn")
             .addEventListener("click", loadDashboard);
-
-        loadDashboard();
 
         // Add PG form
         const addPgSection = document.getElementById(
@@ -1093,22 +1148,19 @@
             "false"
         );
 
-        // Open or close form
-        showAddPgBtn.addEventListener(
-            "click",
-            function () {
-                addPgSection.hidden = !addPgSection.hidden;
+        // Open or close PG form
+        showAddPgBtn.addEventListener("click", function () {
+            addPgSection.hidden = !addPgSection.hidden;
 
-                showAddPgBtn.setAttribute(
-                    "aria-expanded",
-                    String(!addPgSection.hidden)
-                );
+            showAddPgBtn.setAttribute(
+                "aria-expanded",
+                String(!addPgSection.hidden)
+            );
 
-                if (!addPgSection.hidden) {
-                    document.getElementById("pgName").focus();
-                }
+            if (!addPgSection.hidden) {
+                document.getElementById("pgName").focus();
             }
-        );
+        });
 
         // Save PG
         addPgForm.addEventListener(
@@ -1116,10 +1168,7 @@
             async function (event) {
                 event.preventDefault();
 
-                if (
-                    savingPg ||
-                    !addPgForm.reportValidity()
-                ) {
+                if (savingPg || !addPgForm.reportValidity()) {
                     return;
                 }
 
@@ -1172,33 +1221,24 @@
                 savePgBtn.disabled = true;
                 savePgBtn.textContent = "Saving...";
 
-                addPgForm.setAttribute(
-                    "aria-busy",
-                    "true"
-                );
+                addPgForm.setAttribute("aria-busy", "true");
 
                 try {
-                    const response = await fetch(
-                        `${API_URL}/api/pgs`,
+                    const response = await adminFetch(
+                        "/api/pgs",
                         {
                             method: "POST",
                             headers: {
-                                "Content-Type": "application/json",
-                                "Authorization": `Bearer ${adminToken}`
+                                "Content-Type": "application/json"
                             },
                             body: JSON.stringify(pg)
                         }
                     );
 
-                    if (response.status === 401) {
-                        return;
-                    }
-
                     let result;
 
                     try {
                         result = await response.json();
-
                     } catch {
                         throw new Error(
                             "Unexpected server response. Check the Properties page before trying again."
@@ -1207,8 +1247,7 @@
 
                     if (!response.ok || !result.success) {
                         throw new Error(
-                            result.message ||
-                            "Could not save PG."
+                            result.message || "Could not save PG."
                         );
                     }
 
@@ -1242,10 +1281,13 @@
                     "staynestAdminToken"
                 );
 
-                window.location.replace(
-                    "admin-login.html"
-                );
+                window.location.replace("admin-login.html");
             });
+
+        // Initial load
+        if (adminToken) {
+            loadDashboard();
+        }
     </script>
 </body>
 </html>
